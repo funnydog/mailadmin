@@ -1,0 +1,65 @@
+{{ define "sidebar" }}
+<div class="sidebar-sticky">
+  <ul class="nav nav-tabs nav-tabs-vertical nav-tabs-left flex-column">
+    <li class="nav-item">
+      <a class="nav-link" href="{{ reverse "domain-list" }}">
+	<span data-feather="arrow-up-left"></span>
+	Home
+      </a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link" href="{{ reverse "domain-overview" .domain.Id.Value }}">
+	<span data-feather="archive"></span>
+	Overview
+      </a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link" href="{{ reverse "domain-update" .domain.Id.Value }}">
+	<span data-feather="edit-2"></span>
+	Change
+      </a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link" href="{{ reverse "mailbox-list" .domain.Id.Value }}">
+	<span data-feather="inbox"></span>
+	Mailboxes
+      </a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link active" href="{{ reverse "alias-list" .domain.Id.Value }}">
+	<span data-feather="mail"></span>
+	Aliases <span class="sr-only">(current)</span>
+      </a>
+    </li>
+  </ul>
+</div>
+{{ end }}
+{{ define "content" }}
+<div class="row">
+  <div class="col-sm">
+    <h5>Delete The Alias</h5>
+  </div>
+</div>
+<div class="alert alert-warning" role="alert">
+  <dl class="dl-horizontal">
+    <dt>Source</dt>
+    <dd>{{ .alias.Source }}</dd>
+    <dt>Destination</dt>
+    <dd>{{ .alias.Destination }}</dd>
+    <dt>Active</dt>
+    <dd>{{ if .alias.Active }}Yes{{ else }}No{{ end }}</dd>
+  </dl>
+  <p class="text-danger">Are you sure you want to delete the alias above?</p>
+</div>
+<form action="" method="post" class="form">
+  {{ .csrfField }}
+  <div class="form-group">
+    <a class="btn btn-primary btn-default" href="{{ reverse "alias-list" .domain.Id.Value }}">
+      <span data-feather="arrow-up-left"></span> No, go back
+    </a>
+    <button class="btn btn-danger" type="submit">
+      <span data-feather="trash"></span> Yes, do it now
+    </button>
+  </div>
+</form>
+{{ end }}

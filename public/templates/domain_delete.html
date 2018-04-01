@@ -1,0 +1,27 @@
+{{ define "title" }}Delete the domain{{ end }}
+{{ define "content" }}
+<div class="alert alert-warning" role="alert">
+  <dl class="dl-horizontal">
+    <dt>Name</dt>
+    <dd>{{ .domain.Name }}</dd>
+    <dt>Description</dt>
+    <dd>{{ .domain.Description }}</dd>
+    <dt>BackupMX</dt>
+    <dd>{{ if .domain.BackupMX }}Yes{{ else }}No{{ end }}</dd>
+    <dt>Active</dt>
+    <dd>{{ if .domain.Active }}Yes{{ else }}No{{ end }}</dd>
+  </dl>
+  <p class="text-danger">Are you sure you want to delete the domain above?</p>
+</div>
+<form action="" method="post" class="form">
+  {{ .csrfField }}
+  <div class="form-group">
+    <a class="btn btn-primary btn-default" href="{{ reverse "domain-update" .domain.Id.Value }}">
+      <span data-feather="arrow-up-left"></span> No, go back
+    </a>
+    <button class="btn btn-primary btn-danger" type="submit">
+      <span data-feather="trash"></span> Yes, do it now
+    </button>
+  </div>
+</form>
+{{ end }}

@@ -1,0 +1,55 @@
+{{ define "layout" }}
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="keywords" content="golang webapp mailadmin">
+    <meta name="description" content="mailadmin web application">
+    <title>MailAdmin</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    <link rel="stylesheet" href="/static/mailadmin.css">
+    <script src="https://unpkg.com/feather-icons/dist/feather.min.js"></script>
+  </head>
+  <body>
+    <nav class="navbar navbar-dark sticky-top bg-dark flex-md-nowrap p-0">
+      <a class="navbar-brand col-sm-3 col-md-2 mr-0" href="{{ reverse "domain-list" }}">MailAdmin</a>
+      <div class="navbar-title w-100">{{ .domain.Name }}</div>
+      <ul class="navbar-nav px-3">
+	<li class="nav-item text-nowrap">
+	  <a class="nav-link" href="{{ reverse "sign-out" }}"><span data-feather="log-out"></span> Sign out</a>
+	</li>
+      </ul>
+    </nav>
+    <div class="container-fluid">
+      <div class="row">
+	<div class="col-md-2 d-none d-md-block bg-light sidebar">
+	  {{ template "sidebar" . }}
+	</div>
+	<div class="col-md-10 ml-sm-auto col-lg-10 pt-3 px-3">
+	  {{ if .flashes }}
+	  <div class="alert alert-success" role="alert">
+	    <ul class="list-unstyled mb-0">
+	      {{ range $_, $flash := .flashes }}
+	      <li>
+		{{ $flash }}
+		<button type="button" class="close" data-dismiss="alert" aria-label="Close">
+		  <span aria-hidden="true">&times;</span>
+		</button>
+	      </li>
+	      {{ end }}
+	    </ul>
+	  </div>
+	  {{ end }}
+	  {{ template "content" . }}
+	</div>
+      </div>
+    </div>
+    <script>
+      feather.replace();
+    </script>
+  </body>
+</html>
+{{ end }}
+{{ define "content" }}{{ end }}
+{{ define "sidebar" }}{{ end }}

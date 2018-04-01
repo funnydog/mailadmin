@@ -1,0 +1,66 @@
+{{ define "sidebar" }}
+<div class="sidebar-sticky">
+  <ul class="nav nav-tabs nav-tabs-vertical nav-tabs-left flex-column">
+    <li class="nav-item">
+      <a class="nav-link" href="{{ reverse "domain-list" }}">
+	<span data-feather="arrow-up-left"></span>
+	Home
+      </a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link active" href="{{ reverse "domain-overview" .domain.Id.Value }}">
+	<span data-feather="archive"></span>
+	Overview <span class="sr-only">(current)</span>
+      </a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link" href="{{ reverse "domain-update" .domain.Id.Value }}">
+	<span data-feather="edit-2"></span>
+	Change
+      </a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link" href="{{ reverse "mailbox-list" .domain.Id.Value }}">
+	<span data-feather="inbox"></span>
+	Mailboxes
+      </a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link" href="{{ reverse "alias-list" .domain.Id.Value }}">
+	<span data-feather="mail"></span>
+	Aliases
+      </a>
+    </li>
+  </ul>
+</div>
+{{ end }}
+{{ define "content" }}
+<div class="row">
+  <div class="col-sm">
+    <h5>Overview</h5>
+  </div>
+</div>
+<div class="card" style="width: 27rem">
+  <div class="card-body">
+    <h5 class="card-title">{{ .domain.Name }}</h5>
+    <hr>
+    <ul class="list-unstyled">
+      <li>Created on {{ .domain.Created.Format "2006-01-02 15:04 MST" }}</li>
+      <li>Last modified on {{ .domain.Modified.Format "2006-01-02 15:04 MST" }}</li>
+      <li>Active: <strong>{{ if .domain.Active }}Yes{{ else }}No{{ end }}</strong></li>
+      <li>BackupMX: <strong>{{ if .domain.BackupMX }}Yes{{ else }}No{{ end }}</strong></li>
+    </ul>
+    <a class="card-link" href="{{ reverse "domain-update" .domain.Id.Value }}">
+      <span data-feather="edit-2"></span> Change
+    </a>
+    <a class="card-link" href="{{ reverse "mailbox-list" .domain.Id.Value }}">
+      <span data-feather="inbox"></span> Mailboxes
+    </a>
+    <a class="card-link" href="{{ reverse "alias-list" .domain.Id.Value }}">
+      <span data-feather="mail"></span> Aliases
+    </a>
+    <a class="card-link text-danger" href="{{ reverse "domain-delete" .domain.Id.Value }}">
+      <span data-feather="trash"></span> Delete
+    </a>
+</div>
+{{ end }}

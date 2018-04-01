@@ -1,0 +1,16 @@
+{{ define "passfield" }}
+{{ if .Label }}<strong><label class="control-label" for="{{ .Name }}">{{ .Label }}</label></strong>{{ end }}
+<div class="input-group mb-3">
+  <div class="input-group-prepend">
+    <div class="input-group-text">
+      <span data-feather="lock"></span>
+    </div>
+  </div>
+  <input class="form-control{{ if .Error }} is-invalid{{ else if .Submitted }} is-valid{{ end }}" id="{{ .Name }}" name="{{ .Name }}" placeholder="{{ .Label }}" type="password" value="{{ .Value }}" {{ if .Required }}required {{ end }}/>
+  {{ if .Error }}
+  <div class="invalid-feedback">{{ .Error }}</div>
+  {{ else if .Submitted }}
+  <div class="valid-feedback">Looks good!</div>
+  {{ end }}
+</div>
+{{ end }}

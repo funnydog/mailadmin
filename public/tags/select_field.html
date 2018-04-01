@@ -1,0 +1,15 @@
+{{ define "selectfield" }}
+<div class="form-group">
+  {{ if .Label }}<label class="control-label" for="{{ .Name }}">{{ .Label }}</label>{{ end }}
+  <select class="form-control{{ if .Error }} is-invalid{{ else if .Submitted }} is-valid{{ end }}" id="{{ .Name }}" name="{{ .Name }}">
+    {{ $value := .Value }}{{ range $_, $entry := .Data }}
+    <option value="{{ $entry.Key }}"{{ if eq $value $entry.Key }} selected{{ end }}>{{ $entry.Value }}</option>
+    {{ end }}
+  </select>
+  {{ if .Error }}
+  <div class="invalid-feedback">{{ .Error }}</div>
+  {{ else if .Submitted }}
+  <div class="valid-feedback">Looks good!</div>
+  {{ end }}
+</div>
+{{ end }}
