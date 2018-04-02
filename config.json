@@ -1,15 +1,15 @@
 {
-    "Username": "admin",
-    "Password": "$2a$10$EEfHi8n04pTULiuSLkVkv.4WkZTPU5K4bjtuYeRYgJWDxzPg3vYvi",
-    "ServerHost": "",
-    "ServerPort": "8080",
-    "DBType": "sqlite3",
-    "DBUser": "",
-    "DBName": "postfix.db",
-    "DBHost": "",
-    "DBPort": "",
-    "DBSSLMode": "",
-    "StaticDir": "./public/static/",
-    "TemplateDir": "./public/templates/",
-    "TagsDir": "./public/tags/"
+    "username": "admin",
+    "password": "$2a$10$EEfHi8n04pTULiuSLkVkv.4WkZTPU5K4bjtuYeRYgJWDxzPg3vYvi",
+    "serverhost": "",
+    "serverport": "8080",
+    "dbtype": "sqlite3",
+    "dbuser": "",
+    "dbname": "postfix.db",
+    "dbhost": "",
+    "dbport": "",
+    "dbsslmode": "",
+    "staticdir": "./public/static/",
+    "templatedir": "./public/templates/",
+    "tagsdir": "./public/tags/"
 }

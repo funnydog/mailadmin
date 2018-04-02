@@ -8,21 +8,21 @@ import (
 )
 
 type Configuration struct {
-	Username    string
-	Password    string
-	ServerHost  string
-	ServerPort  string
-	DBType      string
-	DBUser      string
-	DBPass      string
-	DBName      string
-	DBHost      string
-	DBPort      string
-	DBSSLMode   string
-	StaticDir   string
-	TemplateDir string
-	TagsDir     string
-	CookieKey   string
+	Username    string `json:"username"`
+	Password    string `json:"password"`
+	ServerHost  string `json:"serverhost"`
+	ServerPort  string `json:"serverport"`
+	DBType      string `json:"dbtype"`
+	DBUser      string `json:"dbuser"`
+	DBPass      string `json:"dbpass"`
+	DBName      string `json:"dbname"`
+	DBHost      string `json:"dbhost"`
+	DBPort      string `json:"dbport"`
+	DBSSLMode   string `json:"dbsslmode"`
+	StaticDir   string `json:"staticdir"`
+	TemplateDir string `json:"templatedir"`
+	TagsDir     string `json:"tagsdir"`
+	CookieKey   string `json:"cookiekey"`
 }
 
 func (c *Configuration) GetConnString() string {
