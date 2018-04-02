@@ -8,12 +8,11 @@ import (
 
 	"github.com/funnydog/mailadmin/core"
 	"github.com/funnydog/mailadmin/core/form"
+	"github.com/funnydog/mailadmin/core/sha512crypt"
 	"github.com/funnydog/mailadmin/types"
 	"github.com/gorilla/csrf"
 	"github.com/gorilla/sessions"
 	"github.com/julienschmidt/httprouter"
-
-	"golang.org/x/crypto/bcrypt"
 )
 
 func getFlashes(w http.ResponseWriter, r *http.Request, s sessions.Store) []interface{} {
@@ -158,7 +157,7 @@ func signInHandler(w http.ResponseWriter, r *http.Request, ctx *core.Context) {
 		username := r.FormValue("username")
 		password := r.FormValue("password")
 
-		err := bcrypt.CompareHashAndPassword([]byte(ctx.Config.Password), []byte(password))
+		err := sha512crypt.CompareHashAndPassword([]byte(ctx.Config.Password), []byte(password))
 		if username == ctx.Config.Username && err == nil {
 			session, err := ctx.Store.Get(r, "session")
 			if err == nil {
@@ -424,7 +423,7 @@ func mailboxSave(w http.ResponseWriter, r *http.Request, ctx *core.Context) {
 
 		// hash the password
 		if password != "" {
-			hash, err := bcrypt.GenerateFromPassword([]byte(password), 12)
+			hash, err := sha512crypt.GenerateFromPassword([]byte(password))
 			if err != nil {
 				log.Println(err)
 				return

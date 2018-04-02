@@ -1,6 +1,6 @@
 {
     "username": "admin",
-    "password": "$2a$10$EEfHi8n04pTULiuSLkVkv.4WkZTPU5K4bjtuYeRYgJWDxzPg3vYvi",
+    "password": "$6$S.8nHrObJ8COAY1B$IjnhQU6oxMPaByrkHj9mJHuWVGK36brc0oSkr.ViOR1fHEev4XmF/ebAGUS6O7GbZ.3mzPkfkOUH.y54hEjXu.",
     "serverhost": "",
     "serverport": "8080",
     "dbtype": "sqlite3",
