@@ -51,9 +51,14 @@ type route struct {
 func main() {
 	context, err := core.CreateContext("config.json")
 	if err != nil {
-		log.Fatal(err)
+		log.Panic(err)
 	}
 	defer context.Close()
+
+	err = types.RegisterDatabase(context.Database)
+	if err != nil {
+		log.Panic(err)
+	}
 
 	routes := []route{
 		{"/", "GET", indexHandler, "index"},
@@ -191,7 +196,7 @@ func signOutHandler(w http.ResponseWriter, r *http.Request, ctx *core.Context) {
 }
 
 func domainList(w http.ResponseWriter, r *http.Request, ctx *core.Context) {
-	domains, err := ctx.Database.GetDomainList()
+	domains, err := types.GetDomainList(ctx.Database)
 	if err != nil {
 		log.Println(err)
 		return
@@ -212,7 +217,7 @@ func domainOverview(w http.ResponseWriter, r *http.Request, ctx *core.Context) {
 		return
 	}
 
-	domain, err := ctx.Database.GetDomain(pk)
+	domain, err := types.GetDomain(ctx.Database, pk)
 	if err != nil {
 		log.Println(err)
 		return
@@ -246,7 +251,7 @@ func domainSave(w http.ResponseWriter, r *http.Request, ctx *core.Context) {
 		title = "Create New Domain"
 	} else {
 		var err error
-		domain, err = ctx.Database.GetDomain(pk)
+		domain, err = types.GetDomain(ctx.Database, pk)
 		if err != nil {
 			log.Println(err)
 			return
@@ -280,10 +285,10 @@ func domainSave(w http.ResponseWriter, r *http.Request, ctx *core.Context) {
 		var err error
 		var flash string
 		if pkerr != nil {
-			err = ctx.Database.CreateDomain(&domain)
+			err = domain.Create(ctx.Database)
 			flash = "Domain created successfully"
 		} else {
-			err = ctx.Database.UpdateDomain(&domain)
+			err = domain.Update(ctx.Database)
 			flash = "Domain updated successfully"
 		}
 		if err != nil {
@@ -308,13 +313,13 @@ func domainDelete(w http.ResponseWriter, r *http.Request, ctx *core.Context) {
 		return
 	}
 
-	if r.Method == "GET" {
-		domain, err := ctx.Database.GetDomain(pk)
-		if err != nil {
-			log.Println(err)
-			return
-		}
+	domain, err := types.GetDomain(ctx.Database, pk)
+	if err != nil {
+		log.Println(err)
+		return
+	}
 
+	if r.Method == "GET" {
 		data := map[string]interface{}{
 			"domain":         domain,
 			csrf.TemplateTag: csrf.TemplateField(r),
@@ -323,7 +328,7 @@ func domainDelete(w http.ResponseWriter, r *http.Request, ctx *core.Context) {
 		ctx.Render(w, "domain_delete.html", &data)
 	} else if r.Method != "POST" {
 		// method not supported
-	} else if err := ctx.Database.DeleteDomain(pk); err != nil {
+	} else if err := domain.Delete(ctx.Database); err != nil {
 		log.Println(err)
 	} else {
 		_ = addFlash(w, r, ctx.Store, "Domain deleted successfully")
@@ -340,13 +345,13 @@ func mailboxList(w http.ResponseWriter, r *http.Request, ctx *core.Context) {
 		return
 	}
 
-	domain, err := ctx.Database.GetDomain(domain_id)
+	domain, err := types.GetDomain(ctx.Database, domain_id)
 	if err != nil {
 		log.Println(err)
 		return
 	}
 
-	mailboxes, err := ctx.Database.GetMailboxList(domain_id)
+	mailboxes, err := types.GetMailboxList(ctx.Database, domain_id)
 	if err != nil {
 		log.Println(err)
 		return
@@ -376,7 +381,7 @@ func mailboxSave(w http.ResponseWriter, r *http.Request, ctx *core.Context) {
 		return
 	}
 
-	domain, err := ctx.Database.GetDomain(domain_id)
+	domain, err := types.GetDomain(ctx.Database, domain_id)
 	if err != nil {
 		log.Println(err)
 		return
@@ -390,7 +395,7 @@ func mailboxSave(w http.ResponseWriter, r *http.Request, ctx *core.Context) {
 		mailbox.Active = true
 		title = "Create New Mailbox"
 	} else {
-		mailbox, err = ctx.Database.GetMailbox(pk)
+		mailbox, err = types.GetMailbox(ctx.Database, pk)
 		if err != nil {
 			log.Println(err)
 			return
@@ -436,10 +441,10 @@ func mailboxSave(w http.ResponseWriter, r *http.Request, ctx *core.Context) {
 
 		var flash string
 		if pkerr != nil {
-			err = ctx.Database.CreateMailbox(&mailbox)
+			err = mailbox.Create(ctx.Database)
 			flash = "Mailbox created successfully"
 		} else {
-			err = ctx.Database.UpdateMailbox(&mailbox)
+			err = mailbox.Update(ctx.Database)
 			flash = "Mailbox updated successfully"
 		}
 		if err != nil {
@@ -457,26 +462,26 @@ func mailboxSave(w http.ResponseWriter, r *http.Request, ctx *core.Context) {
 func mailboxDelete(w http.ResponseWriter, r *http.Request, ctx *core.Context) {
 	parameters := r.Context().Value(0).(httprouter.Params)
 
-	domain_id, err := strconv.ParseInt(parameters.ByName("domain"), 10, 64)
-	if err != nil {
-		log.Println(err)
-		return
-	}
-
 	pk, err := strconv.ParseInt(parameters.ByName("pk"), 10, 64)
 	if err != nil {
 		log.Println(err)
 		return
 	}
 
+	mailbox, err := types.GetMailbox(ctx.Database, pk)
+	if err != nil {
+		log.Println(err)
+		return
+	}
+
 	if r.Method == "GET" {
-		domain, err := ctx.Database.GetDomain(domain_id)
+		domain_id, err := strconv.ParseInt(parameters.ByName("domain"), 10, 64)
 		if err != nil {
 			log.Println(err)
 			return
 		}
 
-		mailbox, err := ctx.Database.GetMailbox(pk)
+		domain, err := types.GetDomain(ctx.Database, domain_id)
 		if err != nil {
 			log.Println(err)
 			return
@@ -491,11 +496,11 @@ func mailboxDelete(w http.ResponseWriter, r *http.Request, ctx *core.Context) {
 		ctx.Render(w, "mailbox_delete.html", &data)
 	} else if r.Method != "POST" {
 		// method not supported
-	} else if err := ctx.Database.DeleteMailbox(pk); err != nil {
+	} else if err := mailbox.Delete(ctx.Database); err != nil {
 		log.Println(err)
 	} else {
 		_ = addFlash(w, r, ctx.Store, "Mailbox deleted successfully")
-		http.Redirect(w, r, ctx.Reverse("mailbox-list", domain_id), http.StatusSeeOther)
+		http.Redirect(w, r, ctx.Reverse("mailbox-list", mailbox.Domain.Int64), http.StatusSeeOther)
 	}
 }
 
@@ -508,13 +513,13 @@ func aliasList(w http.ResponseWriter, r *http.Request, ctx *core.Context) {
 		return
 	}
 
-	domain, err := ctx.Database.GetDomain(domain_id)
+	domain, err := types.GetDomain(ctx.Database, domain_id)
 	if err != nil {
 		log.Println(err)
 		return
 	}
 
-	aliases, err := ctx.Database.GetAliasList(domain_id)
+	aliases, err := types.GetAliasList(ctx.Database, domain_id)
 	if err != nil {
 		log.Println(err)
 		return
@@ -544,7 +549,7 @@ func aliasSave(w http.ResponseWriter, r *http.Request, ctx *core.Context) {
 		return
 	}
 
-	domain, err := ctx.Database.GetDomain(domain_id)
+	domain, err := types.GetDomain(ctx.Database, domain_id)
 	if err != nil {
 		log.Println(err)
 		return
@@ -558,7 +563,7 @@ func aliasSave(w http.ResponseWriter, r *http.Request, ctx *core.Context) {
 		alias.Active = true
 		title = "Create New Alias"
 	} else {
-		alias, err = ctx.Database.GetAlias(pk)
+		alias, err = types.GetAlias(ctx.Database, pk)
 		if err != nil {
 			log.Println(err)
 			return
@@ -593,10 +598,10 @@ func aliasSave(w http.ResponseWriter, r *http.Request, ctx *core.Context) {
 
 		var flash string
 		if pkerr != nil {
-			err = ctx.Database.CreateAlias(&alias)
+			err = alias.Create(ctx.Database)
 			flash = "Alias created successfully"
 		} else {
-			err = ctx.Database.UpdateAlias(&alias)
+			err = alias.Update(ctx.Database)
 			flash = "Alias updated successfully"
 		}
 		if err != nil {
@@ -615,26 +620,26 @@ func aliasSave(w http.ResponseWriter, r *http.Request, ctx *core.Context) {
 func aliasDelete(w http.ResponseWriter, r *http.Request, ctx *core.Context) {
 	parameters := r.Context().Value(0).(httprouter.Params)
 
-	domain_id, err := strconv.ParseInt(parameters.ByName("domain"), 10, 64)
-	if err != nil {
-		log.Println(err)
-		return
-	}
-
 	pk, err := strconv.ParseInt(parameters.ByName("pk"), 10, 64)
 	if err != nil {
 		log.Println(err)
 		return
 	}
 
+	alias, err := types.GetAlias(ctx.Database, pk)
+	if err != nil {
+		log.Println(err)
+		return
+	}
+
 	if r.Method == "GET" {
-		domain, err := ctx.Database.GetDomain(domain_id)
+		domain_id, err := strconv.ParseInt(parameters.ByName("domain"), 10, 64)
 		if err != nil {
 			log.Println(err)
 			return
 		}
 
-		alias, err := ctx.Database.GetAlias(pk)
+		domain, err := types.GetDomain(ctx.Database, domain_id)
 		if err != nil {
 			log.Println(err)
 			return
@@ -649,10 +654,10 @@ func aliasDelete(w http.ResponseWriter, r *http.Request, ctx *core.Context) {
 		ctx.Render(w, "alias_delete.html", &data)
 	} else if r.Method != "POST" {
 		// not supported
-	} else if err := ctx.Database.DeleteAlias(pk); err != nil {
+	} else if err := alias.Delete(ctx.Database); err != nil {
 		log.Println(err)
 	} else {
 		_ = addFlash(w, r, ctx.Store, "Alias deleted successfully")
-		http.Redirect(w, r, ctx.Reverse("alias-list", domain_id), http.StatusSeeOther)
+		http.Redirect(w, r, ctx.Reverse("alias-list", alias.Id.Int64), http.StatusSeeOther)
 	}
 }
