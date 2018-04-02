@@ -13,11 +13,10 @@ import (
 
 type Manager struct {
 	bufferPool *bpool.BufferPool
-	basename   string
 	templates  map[string]*template.Template
 }
 
-func (m *Manager) Render(w http.ResponseWriter, name string, data *map[string]interface{}) error {
+func (m *Manager) Render(w http.ResponseWriter, base, name string, data *map[string]interface{}) error {
 	tmp, ok := m.templates[name]
 	if !ok {
 		return fmt.Errorf("Template %s not found", name)
@@ -26,7 +25,12 @@ func (m *Manager) Render(w http.ResponseWriter, name string, data *map[string]in
 	buf := m.bufferPool.Get()
 	defer m.bufferPool.Put(buf)
 
-	err := tmp.ExecuteTemplate(buf, m.basename, data)
+	var err error
+	if base != "" {
+		err = tmp.ExecuteTemplate(buf, base, data)
+	} else {
+		err = tmp.Execute(buf, data)
+	}
 	if err != nil {
 		return err
 	}
@@ -35,13 +39,22 @@ func (m *Manager) Render(w http.ResponseWriter, name string, data *map[string]in
 	return err
 }
 
-func Create(basename string, templateDir string, tagsDir string, um *urls.Manager) (Manager, error) {
+func Create(extendDir string, templateDir string, tagsDir string, um *urls.Manager) (Manager, error) {
+
+	// generic tags
 	tags, err := filepath.Glob(filepath.Join(tagsDir, "*.html"))
 	if err != nil {
 		tags = []string{}
 	}
 
+	// templates
 	filenames, err := filepath.Glob(filepath.Join(templateDir, "*.html"))
+	if err != nil {
+		return Manager{}, err
+	}
+
+	// layouts extended by templates
+	extends, err := filepath.Glob(filepath.Join(extendDir, "*.html"))
 	if err != nil {
 		return Manager{}, err
 	}
@@ -52,20 +65,13 @@ func Create(basename string, templateDir string, tagsDir string, um *urls.Manage
 		},
 	}
 
-	basefile := filepath.Join(templateDir, basename+".html")
 	templates := map[string]*template.Template{}
 	for _, file := range filenames {
-		if file == basefile {
-			continue
-		}
 
 		name := filepath.Base(file)
 		t := template.New(name).Funcs(fmap)
 
-		files := []string{
-			basefile,
-		}
-		files = append(files, tags...)
+		files := append(extends, tags...)
 		files = append(files, file)
 		templates[name] = template.Must(t.ParseFiles(files...))
 	}
@@ -74,7 +80,6 @@ func Create(basename string, templateDir string, tagsDir string, um *urls.Manage
 
 	return Manager{
 		bufferPool: bp,
-		basename:   basename,
 		templates:  templates,
 	}, nil
 }

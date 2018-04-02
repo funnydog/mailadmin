@@ -30,19 +30,25 @@ func (c *Context) Close() {
 	c.Close()
 }
 
-func (c *Context) Render(w http.ResponseWriter, template string,
+func (c *Context) ExtendAndRender(w http.ResponseWriter, base, template string,
 	data *map[string]interface{}) error {
 
 	if data == nil {
 		data = &map[string]interface{}{}
 	}
 
-	err := c.TemplateManager.Render(w, template, data)
+	err := c.TemplateManager.Render(w, base, template, data)
 	if err != nil {
 		log.Println(err)
 	}
 
 	return err
+}
+
+func (c *Context) Render(w http.ResponseWriter, template string,
+	data *map[string]interface{}) error {
+
+	return c.ExtendAndRender(w, "", template, data)
 }
 
 func (c *Context) Reverse(name string, args ...interface{}) string {
@@ -97,7 +103,12 @@ func CreateContext(configFile string) (Context, error) {
 	router := httprouter.New()
 	urlManager := urls.CreateManager(router)
 
-	templates, err := template.Create("layout", conf.TemplateDir, conf.TagsDir, &urlManager)
+	templates, err := template.Create(
+		conf.ExtendDir,
+		conf.TemplateDir,
+		conf.TagsDir,
+		&urlManager,
+	)
 	if err != nil {
 		db.Close()
 		return Context{}, err

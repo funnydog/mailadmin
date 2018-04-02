@@ -1,7 +1,6 @@
 package main
 
 import (
-	"html/template"
 	"log"
 	"net/http"
 	"strconv"
@@ -147,12 +146,6 @@ func indexHandler(w http.ResponseWriter, r *http.Request, ctx *core.Context) {
 }
 
 func signInHandler(w http.ResponseWriter, r *http.Request, ctx *core.Context) {
-	signin, err := template.ParseFiles("public/templates/sign_in.html")
-	if err != nil {
-		log.Println(err)
-		return
-	}
-
 	data := map[string]interface{}{
 		csrf.TemplateTag: csrf.TemplateField(r),
 	}
@@ -178,7 +171,7 @@ func signInHandler(w http.ResponseWriter, r *http.Request, ctx *core.Context) {
 
 		data["Error"] = "Sign in failed, wrong username/password"
 	}
-	signin.Execute(w, data)
+	ctx.Render(w, "sign_in.html", &data)
 }
 
 func signOutHandler(w http.ResponseWriter, r *http.Request, ctx *core.Context) {
@@ -202,7 +195,7 @@ func domainList(w http.ResponseWriter, r *http.Request, ctx *core.Context) {
 		return
 	}
 
-	ctx.Render(w, "domain_list.html", &map[string]interface{}{
+	ctx.ExtendAndRender(w, "layout", "domain_list.html", &map[string]interface{}{
 		"domains": domains,
 		"flashes": getFlashes(w, r, ctx.Store),
 	})
@@ -228,7 +221,7 @@ func domainOverview(w http.ResponseWriter, r *http.Request, ctx *core.Context) {
 		"flashes": getFlashes(w, r, ctx.Store),
 	}
 
-	ctx.Render(w, "domain_overview.html", &data)
+	ctx.ExtendAndRender(w, "layout", "domain_overview.html", &data)
 }
 
 func domainForm() form.Form {
@@ -301,7 +294,7 @@ func domainSave(w http.ResponseWriter, r *http.Request, ctx *core.Context) {
 		return
 	}
 
-	ctx.Render(w, "domain_form.html", &data)
+	ctx.ExtendAndRender(w, "layout", "domain_form.html", &data)
 }
 
 func domainDelete(w http.ResponseWriter, r *http.Request, ctx *core.Context) {
@@ -325,7 +318,7 @@ func domainDelete(w http.ResponseWriter, r *http.Request, ctx *core.Context) {
 			csrf.TemplateTag: csrf.TemplateField(r),
 		}
 
-		ctx.Render(w, "domain_delete.html", &data)
+		ctx.ExtendAndRender(w, "layout", "domain_delete.html", &data)
 	} else if r.Method != "POST" {
 		// method not supported
 	} else if err := domain.Delete(ctx.Database); err != nil {
@@ -357,7 +350,7 @@ func mailboxList(w http.ResponseWriter, r *http.Request, ctx *core.Context) {
 		return
 	}
 
-	ctx.Render(w, "mailbox_list.html", &map[string]interface{}{
+	ctx.ExtendAndRender(w, "layout", "mailbox_list.html", &map[string]interface{}{
 		"mailboxes": mailboxes,
 		"domain":    domain,
 		"flashes":   getFlashes(w, r, ctx.Store),
@@ -456,7 +449,7 @@ func mailboxSave(w http.ResponseWriter, r *http.Request, ctx *core.Context) {
 		http.Redirect(w, r, ctx.Reverse("mailbox-list", domain_id), http.StatusSeeOther)
 		return
 	}
-	ctx.Render(w, "mailbox_form.html", &data)
+	ctx.ExtendAndRender(w, "layout", "mailbox_form.html", &data)
 }
 
 func mailboxDelete(w http.ResponseWriter, r *http.Request, ctx *core.Context) {
@@ -493,7 +486,7 @@ func mailboxDelete(w http.ResponseWriter, r *http.Request, ctx *core.Context) {
 			csrf.TemplateTag: csrf.TemplateField(r),
 		}
 
-		ctx.Render(w, "mailbox_delete.html", &data)
+		ctx.ExtendAndRender(w, "layout", "mailbox_delete.html", &data)
 	} else if r.Method != "POST" {
 		// method not supported
 	} else if err := mailbox.Delete(ctx.Database); err != nil {
@@ -525,7 +518,7 @@ func aliasList(w http.ResponseWriter, r *http.Request, ctx *core.Context) {
 		return
 	}
 
-	ctx.Render(w, "alias_list.html", &map[string]interface{}{
+	ctx.ExtendAndRender(w, "layout", "alias_list.html", &map[string]interface{}{
 		"aliases": aliases,
 		"domain":  domain,
 		"flashes": getFlashes(w, r, ctx.Store),
@@ -614,7 +607,7 @@ func aliasSave(w http.ResponseWriter, r *http.Request, ctx *core.Context) {
 		return
 	}
 
-	ctx.Render(w, "alias_form.html", &data)
+	ctx.ExtendAndRender(w, "layout", "alias_form.html", &data)
 }
 
 func aliasDelete(w http.ResponseWriter, r *http.Request, ctx *core.Context) {
@@ -651,7 +644,7 @@ func aliasDelete(w http.ResponseWriter, r *http.Request, ctx *core.Context) {
 			csrf.TemplateTag: csrf.TemplateField(r),
 		}
 
-		ctx.Render(w, "alias_delete.html", &data)
+		ctx.ExtendAndRender(w, "layout", "alias_delete.html", &data)
 	} else if r.Method != "POST" {
 		// not supported
 	} else if err := alias.Delete(ctx.Database); err != nil {

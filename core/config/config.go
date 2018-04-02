@@ -22,6 +22,7 @@ type Configuration struct {
 	StaticDir   string `json:"staticdir"`
 	TemplateDir string `json:"templatedir"`
 	TagsDir     string `json:"tagsdir"`
+	ExtendDir   string `json:"extenddir"`
 	CookieKey   string `json:"cookiekey"`
 }
 

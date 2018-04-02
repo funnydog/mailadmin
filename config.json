@@ -11,5 +11,6 @@
     "dbsslmode": "",
     "staticdir": "./public/static/",
     "templatedir": "./public/templates/",
-    "tagsdir": "./public/tags/"
+    "tagsdir": "./public/tags/",
+    "extenddir": "./public/extend/"
 }
