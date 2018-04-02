@@ -424,7 +424,7 @@ func mailboxSave(w http.ResponseWriter, r *http.Request, ctx *core.Context) {
 
 		// hash the password
 		if password != "" {
-			hash, err := bcrypt.GenerateFromPassword([]byte(password), 10)
+			hash, err := bcrypt.GenerateFromPassword([]byte(password), 12)
 			if err != nil {
 				log.Println(err)
 				return
