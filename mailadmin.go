@@ -8,7 +8,7 @@ import (
 	"strings"
 
 	"github.com/funnydog/mailadmin/core"
-	"github.com/funnydog/mailadmin/form"
+	"github.com/funnydog/mailadmin/core/form"
 	"github.com/funnydog/mailadmin/types"
 	"github.com/gorilla/csrf"
 	"github.com/gorilla/sessions"
