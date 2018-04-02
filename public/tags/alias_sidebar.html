@@ -1,0 +1,36 @@
+{{ define "alias_sidebar" }}
+<div class="sidebar-sticky">
+  <ul class="nav nav-tabs nav-tabs-vertical nav-tabs-left flex-column">
+    <li class="nav-item">
+      <a class="nav-link" href="{{ reverse "domain-list" }}">
+	<span data-feather="arrow-up-left"></span>
+	Home
+      </a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link" href="{{ reverse "domain-overview" .domain.Id.Value }}">
+	<span data-feather="archive"></span>
+	Overview
+      </a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link" href="{{ reverse "domain-update" .domain.Id.Value }}">
+	<span data-feather="edit-2"></span>
+	Change
+      </a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link" href="{{ reverse "mailbox-list" .domain.Id.Value }}">
+	<span data-feather="inbox"></span>
+	Mailboxes
+      </a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link active" href="{{ reverse "alias-list" .domain.Id.Value }}">
+	<span data-feather="mail"></span>
+	Aliases <span class="sr-only">(current)</span>
+      </a>
+    </li>
+  </ul>
+</div>
+{{ end }}
