@@ -110,7 +110,7 @@ func GetDomainList(db *db.Database) ([]Domain, error) {
 	return domains, rows.Err()
 }
 
-func GetDomain(db *db.Database, PK int64) (Domain, error) {
+func GetDomainById(db *db.Database, PK int64) (Domain, error) {
 	t := Domain{}
 
 	stmt, err := db.FindStatement("domainFind")
@@ -233,7 +233,7 @@ func GetMailboxList(db *db.Database, domain_id int64) ([]Mailbox, error) {
 	return mailboxes, rows.Err()
 }
 
-func GetMailbox(db *db.Database, PK int64) (Mailbox, error) {
+func GetMailboxById(db *db.Database, PK int64) (Mailbox, error) {
 	var t Mailbox
 
 	stmt, err := db.FindStatement("mailboxFind")
@@ -355,7 +355,7 @@ func GetAliasList(db *db.Database, domain_id int64) ([]Alias, error) {
 	return aliases, rows.Err()
 }
 
-func GetAlias(db *db.Database, PK int64) (Alias, error) {
+func GetAliasById(db *db.Database, PK int64) (Alias, error) {
 	t := Alias{}
 
 	stmt, err := db.FindStatement("aliasFind")

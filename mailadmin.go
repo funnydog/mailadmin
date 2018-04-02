@@ -217,7 +217,7 @@ func domainOverview(w http.ResponseWriter, r *http.Request, ctx *core.Context) {
 		return
 	}
 
-	domain, err := types.GetDomain(ctx.Database, pk)
+	domain, err := types.GetDomainById(ctx.Database, pk)
 	if err != nil {
 		log.Println(err)
 		return
@@ -251,7 +251,7 @@ func domainSave(w http.ResponseWriter, r *http.Request, ctx *core.Context) {
 		title = "Create New Domain"
 	} else {
 		var err error
-		domain, err = types.GetDomain(ctx.Database, pk)
+		domain, err = types.GetDomainById(ctx.Database, pk)
 		if err != nil {
 			log.Println(err)
 			return
@@ -313,7 +313,7 @@ func domainDelete(w http.ResponseWriter, r *http.Request, ctx *core.Context) {
 		return
 	}
 
-	domain, err := types.GetDomain(ctx.Database, pk)
+	domain, err := types.GetDomainById(ctx.Database, pk)
 	if err != nil {
 		log.Println(err)
 		return
@@ -345,7 +345,7 @@ func mailboxList(w http.ResponseWriter, r *http.Request, ctx *core.Context) {
 		return
 	}
 
-	domain, err := types.GetDomain(ctx.Database, domain_id)
+	domain, err := types.GetDomainById(ctx.Database, domain_id)
 	if err != nil {
 		log.Println(err)
 		return
@@ -381,7 +381,7 @@ func mailboxSave(w http.ResponseWriter, r *http.Request, ctx *core.Context) {
 		return
 	}
 
-	domain, err := types.GetDomain(ctx.Database, domain_id)
+	domain, err := types.GetDomainById(ctx.Database, domain_id)
 	if err != nil {
 		log.Println(err)
 		return
@@ -395,7 +395,7 @@ func mailboxSave(w http.ResponseWriter, r *http.Request, ctx *core.Context) {
 		mailbox.Active = true
 		title = "Create New Mailbox"
 	} else {
-		mailbox, err = types.GetMailbox(ctx.Database, pk)
+		mailbox, err = types.GetMailboxById(ctx.Database, pk)
 		if err != nil {
 			log.Println(err)
 			return
@@ -468,7 +468,7 @@ func mailboxDelete(w http.ResponseWriter, r *http.Request, ctx *core.Context) {
 		return
 	}
 
-	mailbox, err := types.GetMailbox(ctx.Database, pk)
+	mailbox, err := types.GetMailboxById(ctx.Database, pk)
 	if err != nil {
 		log.Println(err)
 		return
@@ -481,7 +481,7 @@ func mailboxDelete(w http.ResponseWriter, r *http.Request, ctx *core.Context) {
 			return
 		}
 
-		domain, err := types.GetDomain(ctx.Database, domain_id)
+		domain, err := types.GetDomainById(ctx.Database, domain_id)
 		if err != nil {
 			log.Println(err)
 			return
@@ -513,7 +513,7 @@ func aliasList(w http.ResponseWriter, r *http.Request, ctx *core.Context) {
 		return
 	}
 
-	domain, err := types.GetDomain(ctx.Database, domain_id)
+	domain, err := types.GetDomainById(ctx.Database, domain_id)
 	if err != nil {
 		log.Println(err)
 		return
@@ -549,7 +549,7 @@ func aliasSave(w http.ResponseWriter, r *http.Request, ctx *core.Context) {
 		return
 	}
 
-	domain, err := types.GetDomain(ctx.Database, domain_id)
+	domain, err := types.GetDomainById(ctx.Database, domain_id)
 	if err != nil {
 		log.Println(err)
 		return
@@ -563,7 +563,7 @@ func aliasSave(w http.ResponseWriter, r *http.Request, ctx *core.Context) {
 		alias.Active = true
 		title = "Create New Alias"
 	} else {
-		alias, err = types.GetAlias(ctx.Database, pk)
+		alias, err = types.GetAliasById(ctx.Database, pk)
 		if err != nil {
 			log.Println(err)
 			return
@@ -626,7 +626,7 @@ func aliasDelete(w http.ResponseWriter, r *http.Request, ctx *core.Context) {
 		return
 	}
 
-	alias, err := types.GetAlias(ctx.Database, pk)
+	alias, err := types.GetAliasById(ctx.Database, pk)
 	if err != nil {
 		log.Println(err)
 		return
@@ -639,7 +639,7 @@ func aliasDelete(w http.ResponseWriter, r *http.Request, ctx *core.Context) {
 			return
 		}
 
-		domain, err := types.GetDomain(ctx.Database, domain_id)
+		domain, err := types.GetDomainById(ctx.Database, domain_id)
 		if err != nil {
 			log.Println(err)
 			return
