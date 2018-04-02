@@ -19,6 +19,7 @@ type Configuration struct {
 	DBHost      string `json:"dbhost"`
 	DBPort      string `json:"dbport"`
 	DBSSLMode   string `json:"dbsslmode"`
+	BasePrefix  string `json:"baseprefix"`
 	StaticDir   string `json:"staticdir"`
 	TemplateDir string `json:"templatedir"`
 	TagsDir     string `json:"tagsdir"`

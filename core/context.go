@@ -77,7 +77,7 @@ func embedCtx(fn func(http.ResponseWriter, *http.Request, *Context),
 
 func (c *Context) AddRoute(name, method, prefix string, handler Handler) {
 	route := urls.URL{
-		Prefix:      prefix,
+		Prefix:      c.Config.BasePrefix + prefix,
 		Method:      method,
 		HandlerFunc: embedCtx(handler, c),
 		Name:        name,

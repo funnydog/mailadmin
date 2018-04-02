@@ -9,6 +9,7 @@
     "dbhost": "",
     "dbport": "",
     "dbsslmode": "",
+    "baseprefix": "/mailadmin",
     "staticdir": "./public/static/",
     "templatedir": "./public/templates/",
     "tagsdir": "./public/tags/",

@@ -108,12 +108,13 @@ func main() {
 
 	// check if the user is logged
 	context.AddMiddleware(func(h http.Handler) http.Handler {
+		allowed := context.Reverse("sign-in")
 		return http.HandlerFunc(
 			func(w http.ResponseWriter, r *http.Request) {
-				if r.URL.Path != "/sign-in/" && r.URL.Path != "/static/signin.css" {
+				if r.URL.Path != allowed && r.URL.Path != "/static/signin.css" {
 					session, err := context.Store.Get(r, "session")
 					if err == nil && session.Values["loggedin"] != true {
-						http.Redirect(w, r, "/sign-in/", 302)
+						http.Redirect(w, r, allowed, 302)
 						return
 					}
 				}
