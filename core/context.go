@@ -100,15 +100,21 @@ func CreateContext(configFile string) (Context, error) {
 		return Context{}, err
 	}
 
+	// default static directory is /static
+	if conf.StaticPrefix == "" {
+		conf.StaticPrefix = "/static"
+	}
+
 	router := httprouter.New()
+	if conf.StaticDir != "" {
+		router.ServeFiles(
+			conf.StaticPrefix+"/*filepath",
+			http.Dir(conf.StaticDir),
+		)
+	}
 	urlManager := urls.CreateManager(router)
 
-	templates, err := template.Create(
-		conf.ExtendDir,
-		conf.TemplateDir,
-		conf.TagsDir,
-		&urlManager,
-	)
+	templates, err := template.Create(&conf, &urlManager)
 	if err != nil {
 		db.Close()
 		return Context{}, err

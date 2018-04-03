@@ -8,6 +8,7 @@ import (
 
 	"github.com/oxtoacart/bpool"
 
+	"github.com/funnydog/mailadmin/core/config"
 	"github.com/funnydog/mailadmin/core/urls"
 )
 
@@ -39,22 +40,22 @@ func (m *Manager) Render(w http.ResponseWriter, base, name string, data *map[str
 	return err
 }
 
-func Create(extendDir string, templateDir string, tagsDir string, um *urls.Manager) (Manager, error) {
+func Create(conf *config.Configuration, um *urls.Manager) (Manager, error) {
 
 	// generic tags
-	tags, err := filepath.Glob(filepath.Join(tagsDir, "*.html"))
+	tags, err := filepath.Glob(filepath.Join(conf.TagsDir, "*.html"))
 	if err != nil {
 		tags = []string{}
 	}
 
 	// templates
-	filenames, err := filepath.Glob(filepath.Join(templateDir, "*.html"))
+	filenames, err := filepath.Glob(filepath.Join(conf.TemplateDir, "*.html"))
 	if err != nil {
 		return Manager{}, err
 	}
 
 	// layouts extended by templates
-	extends, err := filepath.Glob(filepath.Join(extendDir, "*.html"))
+	extends, err := filepath.Glob(filepath.Join(conf.ExtendDir, "*.html"))
 	if err != nil {
 		return Manager{}, err
 	}
@@ -62,6 +63,9 @@ func Create(extendDir string, templateDir string, tagsDir string, um *urls.Manag
 	fmap := template.FuncMap{
 		"reverse": func(url string, args ...interface{}) (string, error) {
 			return um.Reverse(url, args)
+		},
+		"static": func(path string) string {
+			return conf.StaticPrefix + "/" + path
 		},
 	}
 

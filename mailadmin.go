@@ -94,7 +94,6 @@ func main() {
 	for _, r := range routes {
 		context.AddRoute(r.name, r.method, r.prefix, r.handler)
 	}
-	context.Router.ServeFiles("/static/*filepath", http.Dir(context.Config.StaticDir))
 
 	// the order is important
 	// from the last executed to the first
