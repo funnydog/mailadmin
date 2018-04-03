@@ -113,7 +113,7 @@ func main() {
 				if r.URL.Path != allowed && r.URL.Path != "/static/signin.css" {
 					session, err := context.Store.Get(r, "session")
 					if err == nil && session.Values["loggedin"] != true {
-						http.Redirect(w, r, allowed, 302)
+						http.Redirect(w, r, allowed, http.StatusFound)
 						return
 					}
 				}
@@ -289,7 +289,7 @@ func domainSave(w http.ResponseWriter, r *http.Request, ctx *core.Context) {
 		}
 
 		_ = addFlash(w, r, ctx.Store, flash)
-		http.Redirect(w, r, ctx.Reverse("domain-overview", domain.Id.Int64), http.StatusSeeOther)
+		http.Redirect(w, r, ctx.Reverse("domain-overview", domain.Id.Int64), http.StatusFound)
 		return
 	}
 
@@ -324,7 +324,7 @@ func domainDelete(w http.ResponseWriter, r *http.Request, ctx *core.Context) {
 		log.Println(err)
 	} else {
 		_ = addFlash(w, r, ctx.Store, "Domain deleted successfully")
-		http.Redirect(w, r, ctx.Reverse("domain-list"), http.StatusSeeOther)
+		http.Redirect(w, r, ctx.Reverse("domain-list"), http.StatusFound)
 	}
 }
 
@@ -445,7 +445,7 @@ func mailboxSave(w http.ResponseWriter, r *http.Request, ctx *core.Context) {
 		}
 
 		_ = addFlash(w, r, ctx.Store, flash)
-		http.Redirect(w, r, ctx.Reverse("mailbox-list", domain_id), http.StatusSeeOther)
+		http.Redirect(w, r, ctx.Reverse("mailbox-list", domain_id), http.StatusFound)
 		return
 	}
 	ctx.ExtendAndRender(w, "layout", "mailbox_form.html", &data)
@@ -492,7 +492,7 @@ func mailboxDelete(w http.ResponseWriter, r *http.Request, ctx *core.Context) {
 		log.Println(err)
 	} else {
 		_ = addFlash(w, r, ctx.Store, "Mailbox deleted successfully")
-		http.Redirect(w, r, ctx.Reverse("mailbox-list", mailbox.Domain.Int64), http.StatusSeeOther)
+		http.Redirect(w, r, ctx.Reverse("mailbox-list", mailbox.Domain.Int64), http.StatusFound)
 	}
 }
 
@@ -602,7 +602,7 @@ func aliasSave(w http.ResponseWriter, r *http.Request, ctx *core.Context) {
 		}
 
 		_ = addFlash(w, r, ctx.Store, flash)
-		http.Redirect(w, r, ctx.Reverse("alias-list", domain_id), http.StatusSeeOther)
+		http.Redirect(w, r, ctx.Reverse("alias-list", domain_id), http.StatusFound)
 		return
 	}
 
@@ -650,6 +650,6 @@ func aliasDelete(w http.ResponseWriter, r *http.Request, ctx *core.Context) {
 		log.Println(err)
 	} else {
 		_ = addFlash(w, r, ctx.Store, "Alias deleted successfully")
-		http.Redirect(w, r, ctx.Reverse("alias-list", alias.Id.Int64), http.StatusSeeOther)
+		http.Redirect(w, r, ctx.Reverse("alias-list", alias.Id.Int64), http.StatusFound)
 	}
 }
