@@ -95,7 +95,7 @@ func CreateContext(configFile string) (Context, error) {
 		return Context{}, err
 	}
 
-	db, err := db.Connect(conf.GetConnString())
+	db, err := db.Connect(&conf)
 	if err != nil {
 		return Context{}, err
 	}
@@ -126,7 +126,7 @@ func CreateContext(configFile string) (Context, error) {
 
 	return Context{
 		Config:          &conf,
-		Database:        &db,
+		Database:        db,
 		TemplateManager: &templates,
 		URLManager:      &urlManager,
 		Store:           sessions.NewCookieStore([]byte(conf.CookieKey)),

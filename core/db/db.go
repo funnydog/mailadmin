@@ -3,11 +3,16 @@ package db
 import (
 	"database/sql"
 	"errors"
+	"fmt"
+	"strings"
+
+	"github.com/funnydog/mailadmin/core/config"
 
 	_ "github.com/mattn/go-sqlite3"
 )
 
 var (
+	databaseTypeNotSupported = errors.New("Database type not supported")
 	statementNotFound        = errors.New("Statement not found in the statements map[]")
 	statementAlreadyInserted = errors.New("Statement already inserted in the statements map[]")
 )
@@ -47,13 +52,50 @@ func (db *Database) Close() {
 	db.db.Close()
 }
 
-func Connect(conn string) (Database, error) {
-	db, err := sql.Open("sqlite3", conn)
-	if err != nil {
-		return Database{}, err
+func Connect(conf *config.Configuration) (*Database, error) {
+	var (
+		db  *sql.DB
+		err error
+	)
+	switch conf.DBType {
+	case "sqlite3":
+		db, err = sql.Open("sqlite3", conf.DBName)
+	case "postgres":
+		parameters := []string{}
+		if conf.DBUser != "" {
+			parameters = append(parameters, fmt.Sprintf("user=%s", conf.DBUser))
+		}
+
+		if conf.DBPass != "" {
+			parameters = append(parameters, fmt.Sprintf("password=%s", conf.DBPass))
+		}
+
+		if conf.DBName != "" {
+			parameters = append(parameters, fmt.Sprintf("dbname=%s", conf.DBName))
+		}
+
+		if conf.DBHost != "" {
+			parameters = append(parameters, fmt.Sprintf("host=%s", conf.DBHost))
+		}
+
+		if conf.DBPort != "" {
+			parameters = append(parameters, fmt.Sprintf("port=%s", conf.DBPort))
+		}
+
+		if conf.DBSSLMode != "" {
+			parameters = append(parameters, fmt.Sprintf("sslmode=%s", conf.DBSSLMode))
+		}
+
+		db, err = sql.Open("postgres", strings.Join(parameters, " "))
+	default:
+		err = databaseTypeNotSupported
 	}
 
-	return Database{
+	if err != nil {
+		return nil, err
+	}
+
+	return &Database{
 		db:    db,
 		stmts: map[string]*sql.Stmt{},
 	}, nil
