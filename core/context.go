@@ -27,7 +27,7 @@ type Context struct {
 }
 
 func (c *Context) Close() {
-	c.Close()
+	c.Database.Close()
 }
 
 func (c *Context) ExtendAndRender(w http.ResponseWriter, base, template string,
