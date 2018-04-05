@@ -392,7 +392,7 @@ func RegisterDatabase(db *db.Database) error {
 		"mailboxDelete": `DELETE FROM mailbox WHERE id=$1`,
 
 		// aliases
-		"aliasList":   `SELECT id, domain_id, source, destination, active, created, modified FROM alias WHERE domain_id=$1 ORDER BY source`,
+		"aliasList":   `SELECT id, domain_id, source, destination, active, created, modified FROM alias WHERE domain_id=$1 ORDER BY source, destination`,
 		"aliasFind":   `SELECT id, domain_id, source, destination, active, created, modified FROM alias WHERE id=$1`,
 		"aliasCreate": `INSERT INTO alias(domain_id, source, destination, active, created, modified) VALUES ($1, $2, $3, $4, $5, $6)`,
 		"aliasUpdate": `UPDATE alias SET domain_id=$1, source=$2, destination=$3, active=$4, modified=$5 WHERE id=$6`,
