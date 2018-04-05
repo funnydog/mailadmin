@@ -64,7 +64,20 @@ func (c *Context) ListenAndServe() error {
 	for _, m := range c.Middleware {
 		router = m(router)
 	}
-	return http.ListenAndServe(":"+c.Config.ServerPort, router)
+
+	server := http.Server{
+		Addr:    c.Config.ServerHost + ":" + c.Config.ServerPort,
+		Handler: router,
+	}
+
+	if c.Config.ServerCert != "" {
+		return server.ListenAndServeTLS(
+			c.Config.ServerCert,
+			c.Config.ServerKey,
+		)
+	} else {
+		return server.ListenAndServe()
+	}
 }
 
 func embedCtx(fn func(http.ResponseWriter, *http.Request, *Context),

@@ -10,6 +10,8 @@ type Configuration struct {
 	Password     string `json:"password"`
 	ServerHost   string `json:"serverhost"`
 	ServerPort   string `json:"serverport"`
+	ServerCert   string `json:"servercert"`
+	ServerKey    string `json:"serverkey"`
 	DBType       string `json:"dbtype"`
 	DBUser       string `json:"dbuser"`
 	DBPass       string `json:"dbpass"`

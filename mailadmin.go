@@ -132,7 +132,10 @@ func main() {
 	// 		})
 	// })
 
-	context.ListenAndServe()
+	err = context.ListenAndServe()
+	if err != nil {
+		log.Println(err)
+	}
 }
 
 func indexHandler(w http.ResponseWriter, r *http.Request, ctx *core.Context) {
