@@ -56,6 +56,10 @@ func (m *Manager) Add(url *URL) error {
 	return nil
 }
 
+func (m *Manager) GetParams(r *http.Request) httprouter.Params {
+	return r.Context().Value(0).(httprouter.Params)
+}
+
 func (m *Manager) Reverse(name string, args []interface{}) (string, error) {
 	tokens, ok := m.reverse[name]
 	if !ok {

@@ -12,7 +12,6 @@ import (
 	"github.com/funnydog/mailadmin/types"
 	"github.com/gorilla/csrf"
 	"github.com/gorilla/sessions"
-	"github.com/julienschmidt/httprouter"
 )
 
 func getFlashes(w http.ResponseWriter, r *http.Request, s sessions.Store) []interface{} {
@@ -204,7 +203,7 @@ func domainList(w http.ResponseWriter, r *http.Request, ctx *core.Context) {
 }
 
 func domainOverview(w http.ResponseWriter, r *http.Request, ctx *core.Context) {
-	parameters := r.Context().Value(0).(httprouter.Params)
+	parameters := ctx.URLManager.GetParams(r)
 
 	pk, err := strconv.ParseInt(parameters.ByName("pk"), 10, 64)
 	if err != nil {
@@ -236,7 +235,7 @@ func domainForm() form.Form {
 }
 
 func domainSave(w http.ResponseWriter, r *http.Request, ctx *core.Context) {
-	parameters := r.Context().Value(0).(httprouter.Params)
+	parameters := ctx.URLManager.GetParams(r)
 
 	var title string
 	domain := types.Domain{}
@@ -300,7 +299,7 @@ func domainSave(w http.ResponseWriter, r *http.Request, ctx *core.Context) {
 }
 
 func domainDelete(w http.ResponseWriter, r *http.Request, ctx *core.Context) {
-	parameters := r.Context().Value(0).(httprouter.Params)
+	parameters := ctx.URLManager.GetParams(r)
 
 	pk, err := strconv.ParseInt(parameters.ByName("pk"), 10, 64)
 	if err != nil {
@@ -332,7 +331,7 @@ func domainDelete(w http.ResponseWriter, r *http.Request, ctx *core.Context) {
 }
 
 func mailboxList(w http.ResponseWriter, r *http.Request, ctx *core.Context) {
-	parameters := r.Context().Value(0).(httprouter.Params)
+	parameters := ctx.URLManager.GetParams(r)
 
 	domain_id, err := strconv.ParseInt(parameters.ByName("domain"), 10, 64)
 	if err != nil {
@@ -368,7 +367,7 @@ func createMailboxForm() form.Form {
 }
 
 func mailboxSave(w http.ResponseWriter, r *http.Request, ctx *core.Context) {
-	parameters := r.Context().Value(0).(httprouter.Params)
+	parameters := ctx.URLManager.GetParams(r)
 
 	domain_id, err := strconv.ParseInt(parameters.ByName("domain"), 10, 64)
 	if err != nil {
@@ -455,7 +454,7 @@ func mailboxSave(w http.ResponseWriter, r *http.Request, ctx *core.Context) {
 }
 
 func mailboxDelete(w http.ResponseWriter, r *http.Request, ctx *core.Context) {
-	parameters := r.Context().Value(0).(httprouter.Params)
+	parameters := ctx.URLManager.GetParams(r)
 
 	pk, err := strconv.ParseInt(parameters.ByName("pk"), 10, 64)
 	if err != nil {
@@ -500,7 +499,7 @@ func mailboxDelete(w http.ResponseWriter, r *http.Request, ctx *core.Context) {
 }
 
 func aliasList(w http.ResponseWriter, r *http.Request, ctx *core.Context) {
-	parameters := r.Context().Value(0).(httprouter.Params)
+	parameters := ctx.URLManager.GetParams(r)
 
 	domain_id, err := strconv.ParseInt(parameters.ByName("domain"), 10, 64)
 	if err != nil {
@@ -536,7 +535,7 @@ func createAliasForm() form.Form {
 }
 
 func aliasSave(w http.ResponseWriter, r *http.Request, ctx *core.Context) {
-	parameters := r.Context().Value(0).(httprouter.Params)
+	parameters := ctx.URLManager.GetParams(r)
 
 	domain_id, err := strconv.ParseInt(parameters.ByName("domain"), 10, 64)
 	if err != nil {
@@ -613,7 +612,7 @@ func aliasSave(w http.ResponseWriter, r *http.Request, ctx *core.Context) {
 }
 
 func aliasDelete(w http.ResponseWriter, r *http.Request, ctx *core.Context) {
-	parameters := r.Context().Value(0).(httprouter.Params)
+	parameters := ctx.URLManager.GetParams(r)
 
 	pk, err := strconv.ParseInt(parameters.ByName("pk"), 10, 64)
 	if err != nil {
