@@ -11,10 +11,6 @@ import (
 	"strconv"
 )
 
-var ErrMismatchedHashAndPassword = errors.New("sha512crypt: hashedPassword is not the has of the given password")
-var ErrHashTooShort = errors.New("sha512crypt: hashedSecret too short to be a sha512crypted password")
-var ErrWrongMagic = errors.New("sha512crypt: the hash has the wrong magic")
-
 const (
 	magicPrefix   = '6'
 	maxSaltSize   = 16
@@ -23,6 +19,33 @@ const (
 	defaultRounds = 5000
 	alphabet      = "./0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz"
 )
+
+var ErrMismatchedHashAndPassword = errors.New("sha512crypt: hashedPassword is not the hash of the given password")
+var ErrHashTooShort = errors.New("sha512crypt: hashedSecret too short to be a sha512crypted password")
+
+type InvalidHashVersionError byte
+
+func (ih InvalidHashVersionError) Error() string {
+	return fmt.Sprintf("sha512crypt: crypt algorithm version must be '%c', but hashedSecret has '%c' instead'", magicPrefix, ih)
+}
+
+type InvalidHashPrefixError byte
+
+func (ih InvalidHashPrefixError) Error() string {
+	return fmt.Sprintf("sha512crypt: hashes must start with '$', but hashedSecret started with '%c'", byte(ih))
+}
+
+type InvalidSaltPrefixError byte
+
+func (is InvalidSaltPrefixError) Error() string {
+	return fmt.Sprintf("sha512crypt: salt must start with '$', but hashedSecred salt started with '%c'", byte(is))
+}
+
+type InvalidRoundsError int
+
+func (ir InvalidRoundsError) Error() string {
+	return fmt.Sprintf("sha512crypt: rounds %d is outside allowed range (%d,%d)", int(ir), int(minRounds), int(maxRounds))
+}
 
 var roundsPrefix = []byte("rounds=")
 
@@ -55,35 +78,47 @@ func (p *hashed) Hash() []byte {
 }
 
 func (p *hashed) decodeVersion(hash []byte) (int, error) {
-	if hash[0] != '$' || hash[1] != magicPrefix || hash[2] != '$' {
-		return 0, ErrWrongMagic
+	if hash[0] != '$' {
+		return 0, InvalidHashPrefixError(hash[0])
 	}
+
+	if hash[1] != magicPrefix {
+		return 0, InvalidHashVersionError(hash[1])
+	}
+
+	if hash[2] != '$' {
+		return 0, InvalidSaltPrefixError(hash[2])
+	}
+
 	return 3, nil
 }
 
 func (p *hashed) decodeRounds(hash []byte) (int, error) {
-	if bytes.HasPrefix(hash, roundsPrefix) {
-		end := bytes.IndexByte(hash, '$')
-		if end == -1 {
-			return 0, ErrHashTooShort
-		}
-
-		rounds, err := strconv.ParseInt(string(hash[7:end]), 10, 32)
-		if err != nil {
-			return 0, ErrHashTooShort
-		}
-		if rounds < minRounds {
-			p.rounds = minRounds
-		} else if rounds > maxRounds {
-			p.rounds = maxRounds
-		} else {
-			p.rounds = int(rounds)
-		}
-		return end + 1, nil
+	if !bytes.HasPrefix(hash, roundsPrefix) {
+		p.rounds = defaultRounds
+		return 0, nil
 	}
 
-	p.rounds = defaultRounds
-	return 0, nil
+	end := bytes.IndexByte(hash, '$')
+	if end == -1 {
+		return 0, ErrHashTooShort
+	}
+
+	rounds, err := strconv.ParseInt(string(hash[7:end]), 10, 32)
+	if err != nil {
+		return 0, ErrHashTooShort
+	}
+
+	if rounds < minRounds {
+		return 0, InvalidRoundsError(int(rounds))
+	}
+
+	if rounds > maxRounds {
+		return 0, InvalidRoundsError(int(rounds))
+	}
+
+	p.rounds = int(rounds)
+	return end + 1, nil
 }
 
 func GenerateFromPassword(password []byte) ([]byte, error) {
