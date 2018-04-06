@@ -56,3 +56,36 @@ func TestVeryShortPasswords(t *testing.T) {
 		t.Errorf("One byte key resulted in error: %s", err)
 	}
 }
+
+type InvalidHashTest struct {
+	err  error
+	hash []byte
+}
+
+var invalidTests = []InvalidHashTest{
+	{ErrHashTooShort, []byte("$6$rounds=100")},
+	{ErrHashTooShort, []byte("$6$rounds=abc$")},
+	{ErrHashTooShort, []byte("$6$lol")},
+	{InvalidHashPrefixError('%'), []byte("%6$bla$bla")},
+	{InvalidHashVersionError('3'), []byte("$3$bla$bla")},
+	{InvalidSaltPrefixError('&'), []byte("$6&bla$bla")},
+	{InvalidRoundsError(999), []byte("$6$rounds=999$bla$bla")},
+	{InvalidRoundsError(1000000000), []byte("$6$rounds=1000000000$bla$bla")},
+}
+
+func TestInvalidHashErrors(t *testing.T) {
+	check := func(name string, expected, err error) {
+		if err == nil {
+			t.Errorf("%s: should have returned an error", name)
+		}
+		if err != nil && err != expected {
+			t.Errorf("%s gave err %v but should have given %v", name, err, expected)
+		}
+	}
+	for _, iht := range invalidTests {
+		_, err := newFromHash(iht.hash)
+		check("newFromHash", iht.err, err)
+		err = CompareHashAndPassword(iht.hash, []byte("anything"))
+		check("CompareHashAndPassword", iht.err, err)
+	}
+}
