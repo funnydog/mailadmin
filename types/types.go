@@ -375,7 +375,7 @@ func GetAliasById(db *db.Database, PK int64) (Alias, error) {
 	return t, err
 }
 
-func RegisterDatabase(db *db.Database) error {
+func PrepareStatements(db *db.Database) error {
 	stmts := map[string]string{
 		// domains
 		"domainList":   `SELECT id, name, description, backupmx, active, created, modified FROM domain ORDER BY name`,

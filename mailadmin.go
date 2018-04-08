@@ -52,7 +52,7 @@ func main() {
 	}
 	defer context.Close()
 
-	err = types.RegisterDatabase(context.Database)
+	err = types.PrepareStatements(context.Database)
 	if err != nil {
 		log.Panic(err)
 	}
