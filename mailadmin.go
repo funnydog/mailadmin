@@ -112,7 +112,7 @@ func main() {
 		allowed := context.Reverse("sign-in")
 		return http.HandlerFunc(
 			func(w http.ResponseWriter, r *http.Request) {
-				if r.URL.Path != allowed && r.URL.Path != "/static/signin.css" {
+				if r.URL.Path != allowed {
 					session, err := context.Store.Get(r, "session")
 					if err == nil && session.Values["loggedin"] != true {
 						http.Redirect(w, r, allowed, http.StatusFound)
