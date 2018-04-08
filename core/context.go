@@ -4,13 +4,13 @@ import (
 	"log"
 	"net/http"
 
-	"github.com/gorilla/sessions"
-	"github.com/julienschmidt/httprouter"
-
 	"github.com/funnydog/mailadmin/core/config"
 	"github.com/funnydog/mailadmin/core/db"
 	"github.com/funnydog/mailadmin/core/template"
 	"github.com/funnydog/mailadmin/core/urls"
+	"github.com/go-errors/errors"
+	"github.com/gorilla/sessions"
+	"github.com/julienschmidt/httprouter"
 )
 
 type Handler func(http.ResponseWriter, *http.Request, *Context)
@@ -28,6 +28,59 @@ type Context struct {
 
 func (c *Context) Close() {
 	c.Database.Close()
+}
+
+func embedCtx(fn func(http.ResponseWriter, *http.Request, *Context),
+	ctx *Context) http.HandlerFunc {
+
+	return func(w http.ResponseWriter, r *http.Request) {
+		fn(w, r, ctx)
+	}
+}
+
+func (c *Context) AddRoute(name, method, prefix string, handler Handler) {
+	route := urls.URL{
+		Prefix:      c.Config.BasePrefix + prefix,
+		Method:      method,
+		HandlerFunc: embedCtx(handler, c),
+		Name:        name,
+	}
+	c.URLManager.Add(&route)
+}
+
+func (c *Context) SetNotFoundTemplate(template string) {
+	if c.Config.Debug && template != "" {
+		c.Router.NotFound = http.HandlerFunc(
+			func(w http.ResponseWriter, r *http.Request) {
+				log.Printf("Page not found: %s\n", r.URL.Path)
+				data := map[string]interface{}{
+					"request": r,
+				}
+				c.Render(w, template, &data)
+			},
+		)
+	} else {
+		c.Router.NotFound = nil
+	}
+}
+
+func badRequest(w http.ResponseWriter, r *http.Request, err interface{}) {
+	http.Error(w, "500 bad request", http.StatusBadRequest)
+}
+
+func (c *Context) SetPanicTemplate(template string) {
+	if c.Config.Debug && template != "" {
+		c.Router.PanicHandler = func(w http.ResponseWriter, r *http.Request, err interface{}) {
+			log.Println(err)
+			data := map[string]interface{}{
+				"error":   errors.Wrap(err, 3),
+				"request": r,
+			}
+			c.Render(w, template, &data)
+		}
+	} else {
+		c.Router.PanicHandler = badRequest
+	}
 }
 
 func (c *Context) ExtendAndRender(w http.ResponseWriter, base, template string,
@@ -80,24 +133,6 @@ func (c *Context) ListenAndServe() error {
 	}
 }
 
-func embedCtx(fn func(http.ResponseWriter, *http.Request, *Context),
-	ctx *Context) http.HandlerFunc {
-
-	return func(w http.ResponseWriter, r *http.Request) {
-		fn(w, r, ctx)
-	}
-}
-
-func (c *Context) AddRoute(name, method, prefix string, handler Handler) {
-	route := urls.URL{
-		Prefix:      c.Config.BasePrefix + prefix,
-		Method:      method,
-		HandlerFunc: embedCtx(handler, c),
-		Name:        name,
-	}
-	c.URLManager.Add(&route)
-}
-
 func (c *Context) AddMiddleware(mid Middleware) {
 	c.Middleware = append(c.Middleware, mid)
 }
@@ -119,6 +154,7 @@ func CreateContext(configFile string) (Context, error) {
 	}
 
 	router := httprouter.New()
+	router.PanicHandler = badRequest
 	if conf.StaticDir != "" {
 		router.ServeFiles(
 			conf.StaticPrefix+"/*filepath",

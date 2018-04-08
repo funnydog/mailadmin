@@ -12,6 +12,7 @@ Easen the management of my mail server.
 1. Get the necessary dependencies:
 
    ```
+   $ go get -u github.com/go-errors/errors
    $ go get -u github.com/gorilla/csrf
    $ go get -u github.com/gorilla/sessions
    $ go get -u github.com/julienshmidt/httprouter

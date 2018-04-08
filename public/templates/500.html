@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="robots" content="NONE,NOARCHIVE">
+    <title>Error report for {{ .request.URL.Path }}</title>
+    <style type="text/css">
+      html * { padding:0; margin:0; }
+      body * { padding:10px 20px; }
+      body * * { padding:0; }
+      body { font:small sans-serif; background:#eee; color:#000; }
+      body>div { border-bottom:1px solid #ddd; }
+      h1 { font-weight:normal; margin-bottom:.4em; }
+      h1 span { font-size:60%; color:#666; font-weight:normal; }
+      table { border:none; border-collapse: collapse; width:100%; }
+      td, th { vertical-align:top; padding:2px 3px; }
+      th { width:12em; text-align:right; color:#666; padding-right:.5em; }
+      #info { background:#f6f6f6; }
+      #info ol { margin: 0.5em 4em; }
+      #info ol li { font-family: monospace; }
+      #summary { background: #ffc; }
+      #explanation { background:#eee; border-bottom: 0px none; }
+    </style>
+  </head>
+  <body>
+    <div id="summary">
+      <h1>Error report for {{ .request.URL.Path }}</h1>
+      <table class="meta">
+	<tr>
+          <th>Request Method:</th>
+          <td>{{ .request.Method }}</td>
+	</tr>
+	<tr>
+          <th>Request URL:</th>
+          <td>{{ .request.URL.Path }}</td>
+	</tr>
+	<tr>
+	  <th>Error type:</th>
+	  <td>{{ .error.TypeName }}</td>
+	</tr>
+	<tr>
+	  <th>Error value:</th>
+	  <td>{{ .error }}</td>
+	</tr>
+      </table>
+    </div>
+    <div id="info">
+      <pre>{{ .error.ErrorStack }}</pre>
+    </div>
+    <div id="explanation">
+      <p>
+        You're seeing this error because you have <code>"debug": true</code> in your settings file.
+        Change it to <code>false</code> for a standard 500 page.
+      </p>
+    </div>
+  </body>
+</html>

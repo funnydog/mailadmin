@@ -57,6 +57,9 @@ func main() {
 		log.Panic(err)
 	}
 
+	context.SetNotFoundTemplate("404.html")
+	context.SetPanicTemplate("500.html")
+
 	routes := []route{
 		{"/", "GET", indexHandler, "index"},
 
@@ -192,8 +195,7 @@ func signOutHandler(w http.ResponseWriter, r *http.Request, ctx *core.Context) {
 func domainList(w http.ResponseWriter, r *http.Request, ctx *core.Context) {
 	domains, err := types.GetDomainList(ctx.Database)
 	if err != nil {
-		log.Println(err)
-		return
+		panic(err)
 	}
 
 	ctx.ExtendAndRender(w, "layout", "domain_list.html", &map[string]interface{}{
@@ -207,14 +209,12 @@ func domainOverview(w http.ResponseWriter, r *http.Request, ctx *core.Context) {
 
 	pk, err := strconv.ParseInt(parameters.ByName("pk"), 10, 64)
 	if err != nil {
-		log.Println(err)
-		return
+		panic(err)
 	}
 
 	domain, err := types.GetDomainById(ctx.Database, pk)
 	if err != nil {
-		log.Println(err)
-		return
+		panic(err)
 	}
 
 	data := map[string]interface{}{
@@ -247,8 +247,7 @@ func domainSave(w http.ResponseWriter, r *http.Request, ctx *core.Context) {
 		var err error
 		domain, err = types.GetDomainById(ctx.Database, pk)
 		if err != nil {
-			log.Println(err)
-			return
+			panic(err)
 		}
 		title = "Change The Domain"
 	}
@@ -286,8 +285,7 @@ func domainSave(w http.ResponseWriter, r *http.Request, ctx *core.Context) {
 			flash = "Domain updated successfully"
 		}
 		if err != nil {
-			log.Println(err)
-			return
+			panic(err)
 		}
 
 		_ = addFlash(w, r, ctx.Store, flash)
@@ -303,14 +301,12 @@ func domainDelete(w http.ResponseWriter, r *http.Request, ctx *core.Context) {
 
 	pk, err := strconv.ParseInt(parameters.ByName("pk"), 10, 64)
 	if err != nil {
-		log.Println(err)
-		return
+		panic(err)
 	}
 
 	domain, err := types.GetDomainById(ctx.Database, pk)
 	if err != nil {
-		log.Println(err)
-		return
+		panic(err)
 	}
 
 	if r.Method == "GET" {
@@ -323,7 +319,7 @@ func domainDelete(w http.ResponseWriter, r *http.Request, ctx *core.Context) {
 	} else if r.Method != "POST" {
 		// method not supported
 	} else if err := domain.Delete(ctx.Database); err != nil {
-		log.Println(err)
+		panic(err)
 	} else {
 		_ = addFlash(w, r, ctx.Store, "Domain deleted successfully")
 		http.Redirect(w, r, ctx.Reverse("domain-list"), http.StatusFound)
@@ -335,20 +331,17 @@ func mailboxList(w http.ResponseWriter, r *http.Request, ctx *core.Context) {
 
 	domain_id, err := strconv.ParseInt(parameters.ByName("domain"), 10, 64)
 	if err != nil {
-		log.Println(err)
-		return
+		panic(err)
 	}
 
 	domain, err := types.GetDomainById(ctx.Database, domain_id)
 	if err != nil {
-		log.Println(err)
-		return
+		panic(err)
 	}
 
 	mailboxes, err := types.GetMailboxList(ctx.Database, domain_id)
 	if err != nil {
-		log.Println(err)
-		return
+		panic(err)
 	}
 
 	ctx.ExtendAndRender(w, "layout", "mailbox_list.html", &map[string]interface{}{
@@ -371,14 +364,12 @@ func mailboxSave(w http.ResponseWriter, r *http.Request, ctx *core.Context) {
 
 	domain_id, err := strconv.ParseInt(parameters.ByName("domain"), 10, 64)
 	if err != nil {
-		log.Println(err)
-		return
+		panic(err)
 	}
 
 	domain, err := types.GetDomainById(ctx.Database, domain_id)
 	if err != nil {
-		log.Println(err)
-		return
+		panic(err)
 	}
 
 	var title string
@@ -391,8 +382,7 @@ func mailboxSave(w http.ResponseWriter, r *http.Request, ctx *core.Context) {
 	} else {
 		mailbox, err = types.GetMailboxById(ctx.Database, pk)
 		if err != nil {
-			log.Println(err)
-			return
+			panic(err)
 		}
 		title = "Change The Mailbox"
 	}
@@ -427,8 +417,7 @@ func mailboxSave(w http.ResponseWriter, r *http.Request, ctx *core.Context) {
 		if password != "" {
 			hash, err := sha512crypt.GenerateFromPassword([]byte(password))
 			if err != nil {
-				log.Println(err)
-				return
+				panic(err)
 			}
 			mailbox.Password = string(hash)
 		}
@@ -442,8 +431,7 @@ func mailboxSave(w http.ResponseWriter, r *http.Request, ctx *core.Context) {
 			flash = "Mailbox updated successfully"
 		}
 		if err != nil {
-			log.Println(err)
-			return
+			panic(err)
 		}
 
 		_ = addFlash(w, r, ctx.Store, flash)
@@ -458,27 +446,23 @@ func mailboxDelete(w http.ResponseWriter, r *http.Request, ctx *core.Context) {
 
 	pk, err := strconv.ParseInt(parameters.ByName("pk"), 10, 64)
 	if err != nil {
-		log.Println(err)
-		return
+		panic(err)
 	}
 
 	mailbox, err := types.GetMailboxById(ctx.Database, pk)
 	if err != nil {
-		log.Println(err)
-		return
+		panic(err)
 	}
 
 	if r.Method == "GET" {
 		domain_id, err := strconv.ParseInt(parameters.ByName("domain"), 10, 64)
 		if err != nil {
-			log.Println(err)
-			return
+			panic(err)
 		}
 
 		domain, err := types.GetDomainById(ctx.Database, domain_id)
 		if err != nil {
-			log.Println(err)
-			return
+			panic(err)
 		}
 
 		data := map[string]interface{}{
@@ -491,7 +475,7 @@ func mailboxDelete(w http.ResponseWriter, r *http.Request, ctx *core.Context) {
 	} else if r.Method != "POST" {
 		// method not supported
 	} else if err := mailbox.Delete(ctx.Database); err != nil {
-		log.Println(err)
+		panic(err)
 	} else {
 		_ = addFlash(w, r, ctx.Store, "Mailbox deleted successfully")
 		http.Redirect(w, r, ctx.Reverse("mailbox-list", mailbox.Domain.Int64), http.StatusFound)
@@ -503,20 +487,17 @@ func aliasList(w http.ResponseWriter, r *http.Request, ctx *core.Context) {
 
 	domain_id, err := strconv.ParseInt(parameters.ByName("domain"), 10, 64)
 	if err != nil {
-		log.Println(err)
-		return
+		panic(err)
 	}
 
 	domain, err := types.GetDomainById(ctx.Database, domain_id)
 	if err != nil {
-		log.Println(err)
-		return
+		panic(err)
 	}
 
 	aliases, err := types.GetAliasList(ctx.Database, domain_id)
 	if err != nil {
-		log.Println(err)
-		return
+		panic(err)
 	}
 
 	ctx.ExtendAndRender(w, "layout", "alias_list.html", &map[string]interface{}{
@@ -539,14 +520,12 @@ func aliasSave(w http.ResponseWriter, r *http.Request, ctx *core.Context) {
 
 	domain_id, err := strconv.ParseInt(parameters.ByName("domain"), 10, 64)
 	if err != nil {
-		log.Println(err)
-		return
+		panic(err)
 	}
 
 	domain, err := types.GetDomainById(ctx.Database, domain_id)
 	if err != nil {
-		log.Println(err)
-		return
+		panic(err)
 	}
 
 	var title string
@@ -559,8 +538,7 @@ func aliasSave(w http.ResponseWriter, r *http.Request, ctx *core.Context) {
 	} else {
 		alias, err = types.GetAliasById(ctx.Database, pk)
 		if err != nil {
-			log.Println(err)
-			return
+			panic(err)
 		}
 		title = "Change The Alias"
 	}
@@ -599,8 +577,7 @@ func aliasSave(w http.ResponseWriter, r *http.Request, ctx *core.Context) {
 			flash = "Alias updated successfully"
 		}
 		if err != nil {
-			log.Println(err)
-			return
+			panic(err)
 		}
 
 		_ = addFlash(w, r, ctx.Store, flash)
@@ -616,27 +593,23 @@ func aliasDelete(w http.ResponseWriter, r *http.Request, ctx *core.Context) {
 
 	pk, err := strconv.ParseInt(parameters.ByName("pk"), 10, 64)
 	if err != nil {
-		log.Println(err)
-		return
+		panic(err)
 	}
 
 	alias, err := types.GetAliasById(ctx.Database, pk)
 	if err != nil {
-		log.Println(err)
-		return
+		panic(err)
 	}
 
 	if r.Method == "GET" {
 		domain_id, err := strconv.ParseInt(parameters.ByName("domain"), 10, 64)
 		if err != nil {
-			log.Println(err)
-			return
+			panic(err)
 		}
 
 		domain, err := types.GetDomainById(ctx.Database, domain_id)
 		if err != nil {
-			log.Println(err)
-			return
+			panic(err)
 		}
 
 		data := map[string]interface{}{
@@ -649,7 +622,7 @@ func aliasDelete(w http.ResponseWriter, r *http.Request, ctx *core.Context) {
 	} else if r.Method != "POST" {
 		// not supported
 	} else if err := alias.Delete(ctx.Database); err != nil {
-		log.Println(err)
+		panic(err)
 	} else {
 		_ = addFlash(w, r, ctx.Store, "Alias deleted successfully")
 		http.Redirect(w, r, ctx.Reverse("alias-list", alias.Id.Int64), http.StatusFound)

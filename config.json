@@ -16,5 +16,6 @@
     "staticdir": "./public/static/",
     "templatedir": "./public/templates/",
     "tagsdir": "./public/tags/",
-    "extenddir": "./public/extend/"
+    "extenddir": "./public/extend/",
+    "debug": true
 }

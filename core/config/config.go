@@ -26,6 +26,7 @@ type Configuration struct {
 	TagsDir      string `json:"tagsdir"`
 	ExtendDir    string `json:"extenddir"`
 	CookieKey    string `json:"cookiekey"`
+	Debug        bool   `json:"debug"`
 }
 
 func Read(filename string) (Configuration, error) {
