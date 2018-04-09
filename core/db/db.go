@@ -18,7 +18,7 @@ var (
 )
 
 type Database struct {
-	db    *sql.DB
+	Db    *sql.DB
 	stmts map[string]*sql.Stmt
 }
 
@@ -36,7 +36,7 @@ func (db *Database) PrepareStatement(key, sql string) error {
 		return statementAlreadyInserted
 	}
 
-	stmt, err := db.db.Prepare(sql)
+	stmt, err := db.Db.Prepare(sql)
 	if err != nil {
 		return err
 	}
@@ -49,7 +49,7 @@ func (db *Database) Close() {
 	for _, stmt := range db.stmts {
 		stmt.Close()
 	}
-	db.db.Close()
+	db.Db.Close()
 }
 
 func Connect(conf *config.Configuration) (*Database, error) {
@@ -96,7 +96,7 @@ func Connect(conf *config.Configuration) (*Database, error) {
 	}
 
 	return &Database{
-		db:    db,
+		Db:    db,
 		stmts: map[string]*sql.Stmt{},
 	}, nil
 }

@@ -407,3 +407,57 @@ func PrepareStatements(db *db.Database) error {
 	}
 	return nil
 }
+
+func CreateModel(db *db.Database) error {
+	// domain table
+	_, err := db.Db.Exec(`
+CREATE TABLE domain (
+	id INTEGER PRIMARY KEY,
+	name VARCHAR(50) NOT NULL,
+	description TEXT NOT NULL DEFAULT '',
+	backupmx TINYINT(1) NOT NULL DEFAULT '0',
+	active TINYINT(1) NOT NULL DEFAULT '1',
+	created DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+	modified DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+	CONSTRAINT unique_name UNIQUE (name)
+);
+`)
+	if err != nil {
+		return err
+	}
+
+	// mailbox table
+	_, err = db.Db.Exec(`
+CREATE TABLE mailbox (
+	id INTEGER PRIMARY KEY,
+	domain_id INTEGER NOT NULL,
+	email VARCHAR(100) NOT NULL,
+	password VARCHAR(256) NOT NULL,
+	created DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+	modified DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+	active TINYINT(1) NOT NULL DEFAULT '1',
+	CONSTRAINT unique_email UNIQUE (email),
+	FOREIGN KEY (domain_id) REFERENCES domain(id) ON DELETE CASCADE
+);`)
+	if err != nil {
+		return err
+	}
+
+	// alias table
+	_, err = db.Db.Exec(`
+CREATE TABLE alias (
+	id INTEGER PRIMARY KEY,
+	domain_id INTEGER NOT NULL,
+	source VARCHAR(100) NOT NULL,
+	destination VARCHAR(100) NOT NULL,
+	created DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+	modified DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+	active TINYINT(1) NOT NULL DEFAULT '1',
+	FOREIGN KEY (domain_id) REFERENCES domain(id) ON DELETE CASCADE
+);`)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
