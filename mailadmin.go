@@ -46,19 +46,19 @@ type route struct {
 }
 
 func main() {
-	context, err := core.CreateContext("config.json")
+	ctx, err := core.CreateContextFromPath("config.json")
 	if err != nil {
 		log.Panic(err)
 	}
-	defer context.Close()
+	defer ctx.Close()
 
-	err = types.PrepareStatements(context.Database)
+	err = types.PrepareStatements(ctx.Database)
 	if err != nil {
 		log.Panic(err)
 	}
 
-	context.SetNotFoundTemplate("404.html")
-	context.SetPanicTemplate("500.html")
+	ctx.SetNotFoundTemplate("404.html")
+	ctx.SetPanicTemplate("500.html")
 
 	routes := []route{
 		{"/", "GET", indexHandler, "index"},
@@ -94,26 +94,26 @@ func main() {
 	}
 
 	for _, r := range routes {
-		context.AddRoute(r.name, r.method, r.prefix, r.handler)
+		ctx.AddRoute(r.name, r.method, r.prefix, r.handler)
 	}
 
 	// the order is important
 	// from the last executed to the first
 
 	// check the CSRF
-	context.AddMiddleware(csrf.Protect(
+	ctx.AddMiddleware(csrf.Protect(
 		[]byte("32-byte-long-auth-key"),
 		csrf.Secure(false),
 		csrf.FieldName("mailadmin-csrf-token"),
 	))
 
 	// check if the user is logged
-	context.AddMiddleware(func(h http.Handler) http.Handler {
-		allowed := context.Reverse("sign-in")
+	ctx.AddMiddleware(func(h http.Handler) http.Handler {
+		allowed := ctx.Reverse("sign-in")
 		return http.HandlerFunc(
 			func(w http.ResponseWriter, r *http.Request) {
 				if r.URL.Path != allowed {
-					session, err := context.Store.Get(r, "session")
+					session, err := ctx.Store.Get(r, "session")
 					if err == nil && session.Values["loggedin"] != true {
 						http.Redirect(w, r, allowed, http.StatusFound)
 						return
@@ -124,7 +124,7 @@ func main() {
 	})
 
 	// skip the CSRF check
-	// context.AddMiddleware(func(h http.Handler) http.Handler {
+	// ctx.AddMiddleware(func(h http.Handler) http.Handler {
 	// 	return http.HandlerFunc(
 	// 		func(w http.ResponseWriter, r *http.Request) {
 	// 			if r.URL.Path == "/gather/" || r.URL.Path == "/gather" {
@@ -133,11 +133,7 @@ func main() {
 	// 			h.ServeHTTP(w, r)
 	// 		})
 	// })
-
-	err = context.ListenAndServe()
-	if err != nil {
-		log.Println(err)
-	}
+	err = ctx.ListenAndServe()
 }
 
 func indexHandler(w http.ResponseWriter, r *http.Request, ctx *core.Context) {

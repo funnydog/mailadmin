@@ -137,15 +137,10 @@ func (c *Context) AddMiddleware(mid Middleware) {
 	c.Middleware = append(c.Middleware, mid)
 }
 
-func CreateContext(configFile string) (Context, error) {
-	conf, err := config.Read(configFile)
+func CreateContextFromConf(conf *config.Configuration) (*Context, error) {
+	db, err := db.Connect(conf)
 	if err != nil {
-		return Context{}, err
-	}
-
-	db, err := db.Connect(&conf)
-	if err != nil {
-		return Context{}, err
+		return nil, err
 	}
 
 	// default static directory is /static
@@ -163,22 +158,31 @@ func CreateContext(configFile string) (Context, error) {
 	}
 	urlManager := urls.CreateManager(router)
 
-	templates, err := template.Create(&conf, &urlManager)
+	templates, err := template.Create(conf, &urlManager)
 	if err != nil {
 		db.Close()
-		return Context{}, err
+		return nil, err
 	}
 
 	if conf.CookieKey == "" {
 		conf.CookieKey = "something-very-secret"
 	}
 
-	return Context{
-		Config:          &conf,
+	return &Context{
+		Config:          conf,
 		Database:        db,
 		TemplateManager: &templates,
 		URLManager:      &urlManager,
 		Store:           sessions.NewCookieStore([]byte(conf.CookieKey)),
 		Router:          router,
 	}, nil
+}
+
+func CreateContextFromPath(configFile string) (*Context, error) {
+	conf, err := config.Read(configFile)
+	if err != nil {
+		return nil, err
+	}
+
+	return CreateContextFromConf(&conf)
 }
