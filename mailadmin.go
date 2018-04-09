@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"log"
 	"net/http"
 	"strconv"
@@ -12,6 +13,12 @@ import (
 	"github.com/funnydog/mailadmin/types"
 	"github.com/gorilla/csrf"
 	"github.com/gorilla/sessions"
+	"github.com/pborman/getopt/v2"
+)
+
+var (
+	helpFlag   = getopt.Bool('h', "display help")
+	createFlag = getopt.Bool('m', "create a new model")
 )
 
 func getFlashes(w http.ResponseWriter, r *http.Request, s sessions.Store) []interface{} {
@@ -39,11 +46,26 @@ func addFlash(w http.ResponseWriter, r *http.Request, s sessions.Store, text str
 }
 
 func main() {
+	getopt.Parse()
+	if *helpFlag {
+		fmt.Println("Usage: mailadmin <option>")
+		fmt.Println("Options:")
+		fmt.Println("\t-h\t display help")
+		fmt.Println("\t-m\t create the model")
+		return
+	}
+
 	ctx, err := core.CreateContextFromPath("config.json")
 	if err != nil {
 		log.Panic(err)
 	}
 	defer ctx.Close()
+
+	if *createFlag {
+		fmt.Println("Creating the model")
+		types.CreateModel(ctx.Database)
+		return
+	}
 
 	configureContext(ctx)
 
