@@ -15,7 +15,7 @@ Easen the management of my mail server.
    $ go get -u github.com/go-errors/errors
    $ go get -u github.com/gorilla/csrf
    $ go get -u github.com/gorilla/sessions
-   $ go get -u github.com/julienshmidt/httprouter
+   $ go get -u github.com/julienschmidt/httprouter
    $ go get -u github.com/mattn/go-sqlite3
    $ go get -u github.com/pborman/getopt/v2
    ```
