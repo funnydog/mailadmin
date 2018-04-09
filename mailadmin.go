@@ -38,13 +38,6 @@ func addFlash(w http.ResponseWriter, r *http.Request, s sessions.Store, text str
 	return nil
 }
 
-type route struct {
-	prefix  string
-	method  string
-	handler core.Handler
-	name    string
-}
-
 func main() {
 	ctx, err := core.CreateContextFromPath("config.json")
 	if err != nil {
@@ -52,11 +45,27 @@ func main() {
 	}
 	defer ctx.Close()
 
+	configureContext(ctx)
+
 	err = types.PrepareStatements(ctx.Database)
 	if err != nil {
 		log.Panic(err)
 	}
 
+	err = ctx.ListenAndServe()
+	if err != nil {
+		log.Println(err)
+	}
+}
+
+type route struct {
+	prefix  string
+	method  string
+	handler core.Handler
+	name    string
+}
+
+func configureContext(ctx *core.Context) {
 	ctx.SetNotFoundTemplate("404.html")
 	ctx.SetPanicTemplate("500.html")
 
@@ -133,7 +142,6 @@ func main() {
 	// 			h.ServeHTTP(w, r)
 	// 		})
 	// })
-	err = ctx.ListenAndServe()
 }
 
 func indexHandler(w http.ResponseWriter, r *http.Request, ctx *core.Context) {
