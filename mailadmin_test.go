@@ -11,6 +11,7 @@ import (
 
 	"github.com/funnydog/mailadmin/core"
 	"github.com/funnydog/mailadmin/core/config"
+	"github.com/funnydog/mailadmin/core/sha512crypt"
 	"github.com/funnydog/mailadmin/types"
 	"github.com/gorilla/csrf"
 )
@@ -302,10 +303,231 @@ func TestDomainDelete(t *testing.T) {
 
 	testPost(t, myURL, "", http.StatusFound)
 
-
 	// check if the object is still there
 	_, err := types.GetDomainById(ctx.Database, 1)
 	if err == nil {
-		t.Errorf("The Domain hasn't been deleted")
+		t.Error("The Domain hasn't been deleted")
+	}
+}
+
+func TestMailboxCreate(t *testing.T) {
+	ctx := createTestingContext()
+	defer closeTestingContext(ctx)
+
+	ts := httptest.NewServer(ctx.Router)
+	defer ts.Close()
+
+	myURL := ts.URL + ctx.Reverse("mailbox-create", 1)
+
+	testGet(t, myURL, http.StatusOK)
+
+	data := url.Values{}
+	data.Add("email", "notvalidemail")
+	data.Add("password", "pass")
+	data.Add("active", "on")
+	testPost(t, myURL, data.Encode(), http.StatusOK)
+
+	data.Set("email", "valid@example.com")
+	testPost(t, myURL, data.Encode(), http.StatusFound)
+
+	// check if the mailbox was inserted
+	mailbox, err := types.GetMailboxById(ctx.Database, 2)
+	if err != nil {
+		t.Error("The mailbox hasn't been created")
+	}
+	if mailbox.Email != data.Get("email") {
+		t.Errorf("The email %s doesnt match the submitted data %s",
+			mailbox.Email, data.Get("email"))
+	}
+
+	err = sha512crypt.CompareHashAndPassword(
+		[]byte(mailbox.Password),
+		[]byte(data.Get("password")),
+	)
+	if err != nil {
+		t.Error(err)
+	}
+
+	if mailbox.Active != true {
+		t.Error("The mailbox is not active")
+	}
+}
+
+func TestMailboxUpdate(t *testing.T) {
+	ctx := createTestingContext()
+	defer closeTestingContext(ctx)
+
+	ts := httptest.NewServer(ctx.Router)
+	defer ts.Close()
+
+	myURL := ts.URL + ctx.Reverse("mailbox-update", 1, 1)
+
+	testGet(t, myURL, http.StatusOK)
+
+	mailbox, err := types.GetMailboxById(ctx.Database, 1)
+	if err != nil {
+		t.Error("Mailbox not found")
+	}
+	oldpass := mailbox.Password
+
+	data := url.Values{}
+	data.Add("email", "another@example.org")
+	data.Add("active", "on")
+
+	testPost(t, myURL, data.Encode(), http.StatusOK)
+
+	data.Set("email", "another@example.com")
+	testPost(t, myURL, data.Encode(), http.StatusFound)
+
+	mailbox, err = types.GetMailboxById(ctx.Database, 1)
+	if err != nil {
+		t.Error("Mailbox not found")
+	}
+
+	if mailbox.Email != data.Get("email") {
+		t.Errorf("Email %s not updated to %s", mailbox.Email, data.Get("email"))
+	}
+
+	if mailbox.Password != oldpass {
+		t.Error("Empty password updated the password in the db")
+	}
+
+	if mailbox.Active != true {
+		t.Error("The mailbox is not active")
+	}
+
+	data.Add("password", "12345")
+	testPost(t, myURL, data.Encode(), http.StatusFound)
+
+	mailbox, err = types.GetMailboxById(ctx.Database, 1)
+	if err != nil {
+		t.Error("Mailbox not found")
+	}
+
+	err = sha512crypt.CompareHashAndPassword(
+		[]byte(mailbox.Password),
+		[]byte(data.Get("password")),
+	)
+	if err != nil {
+		t.Error(err)
+	}
+}
+
+func TestMailboxDelete(t *testing.T) {
+	ctx := createTestingContext()
+	defer closeTestingContext(ctx)
+
+	ts := httptest.NewServer(ctx.Router)
+	defer ts.Close()
+
+	myURL := ts.URL + ctx.Reverse("mailbox-delete", 1, 1)
+
+	testGet(t, myURL, http.StatusOK)
+
+	testPost(t, myURL, "", http.StatusFound)
+
+	// check if the object is still there
+	_, err := types.GetMailboxById(ctx.Database, 1)
+	if err == nil {
+		t.Error("The Mailbox hasn't been deleted")
+	}
+}
+
+func TestAliasCreate(t *testing.T) {
+	ctx := createTestingContext()
+	defer closeTestingContext(ctx)
+
+	ts := httptest.NewServer(ctx.Router)
+	defer ts.Close()
+
+	myURL := ts.URL + ctx.Reverse("alias-create", 1)
+
+	testGet(t, myURL, http.StatusOK)
+
+	data := url.Values{}
+	data.Add("source", "source@example.org")
+	data.Add("destination", "destination@otherdomain.com")
+	data.Add("active", "on")
+	testPost(t, myURL, data.Encode(), http.StatusOK)
+
+	data.Set("source", "source@example.com")
+	testPost(t, myURL, data.Encode(), http.StatusFound)
+
+	alias, err := types.GetAliasById(ctx.Database, 2)
+	if err != nil {
+		t.Error(err)
+	}
+
+	if alias.Source != data.Get("source") {
+		t.Errorf("The alias source %s doesn't match the submitted source %s",
+			alias.Source, data.Get("source"))
+	}
+
+	if alias.Destination != data.Get("destination") {
+		t.Errorf("The alias destination %s doesn't match the submitted destination %s",
+			alias.Destination, data.Get("destination"))
+	}
+
+	if alias.Active != true {
+		t.Error("The alias is not active")
+	}
+}
+
+func TestAliasUpdate(t *testing.T) {
+	ctx := createTestingContext()
+	defer closeTestingContext(ctx)
+
+	ts := httptest.NewServer(ctx.Router)
+	defer ts.Close()
+
+	myURL := ts.URL + ctx.Reverse("alias-update", 1, 1)
+
+	testGet(t, myURL, http.StatusOK)
+
+	data := url.Values{}
+	data.Add("source", "source@example.org")
+	data.Add("destination", "destination@otherdomain.com")
+	data.Add("active", "on")
+	testPost(t, myURL, data.Encode(), http.StatusOK)
+
+	data.Set("source", "source@example.com")
+	testPost(t, myURL, data.Encode(), http.StatusFound)
+
+	alias, err := types.GetAliasById(ctx.Database, 1)
+	if err != nil {
+		t.Error(err)
+	}
+
+	if alias.Source != data.Get("source") {
+		t.Errorf("The alias source %s doesn't match the submitted source %s",
+			alias.Source, data.Get("source"))
+	}
+
+	if alias.Destination != data.Get("destination") {
+		t.Errorf("The alias destination %s doesn't match the submitted destination %s",
+			alias.Destination, data.Get("destination"))
+	}
+
+	if alias.Active != true {
+		t.Error("The alias is not active")
+	}
+}
+
+func TestAliasDelete(t *testing.T) {
+	ctx := createTestingContext()
+	defer closeTestingContext(ctx)
+
+	ts := httptest.NewServer(ctx.Router)
+	defer ts.Close()
+
+	myURL := ts.URL + ctx.Reverse("alias-delete", 1, 1)
+
+	testGet(t, myURL, http.StatusOK)
+
+	testPost(t, myURL, "", http.StatusFound)
+
+	_, err := types.GetAliasById(ctx.Database, 1)
+	if err == nil {
+		t.Error("The Alias hasn't been deleted")
 	}
 }
