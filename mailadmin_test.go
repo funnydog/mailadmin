@@ -24,15 +24,27 @@ var testingClient = http.Client{
 	},
 }
 
-func testGet(url string) *http.Response {
+func showResponseBody(t *testing.T, res *http.Response) {
+	body, err := ioutil.ReadAll(res.Body)
+	if err != nil {
+		panic(err)
+	}
+	t.Error(string(body))
+}
+
+func testGet(t *testing.T, url string, status int) {
 	res, err := testingClient.Get(url)
 	if err != nil {
 		panic(err)
 	}
-	return res
+	if res.StatusCode != status {
+		t.Errorf("Actual status: (%d); Expected status: (%d)",
+			res.StatusCode, status)
+		showResponseBody(t, res)
+	}
 }
 
-func testPost(url, data string) *http.Response {
+func testPost(t *testing.T, url, data string, status int) {
 	res, err := testingClient.Post(
 		url,
 		"application/x-www-form-urlencoded",
@@ -41,7 +53,11 @@ func testPost(url, data string) *http.Response {
 	if err != nil {
 		panic(err)
 	}
-	return res
+	if res.StatusCode != status {
+		t.Errorf("Actual status: (%d); Excpected status: (%d)",
+			res.StatusCode, status)
+		showResponseBody(t, res)
+	}
 }
 
 func createTestingContext() *core.Context {
@@ -120,14 +136,6 @@ func closeTestingContext(ctx *core.Context) {
 	_ = os.Remove(databasePath)
 }
 
-func showResponseBody(t *testing.T, res *http.Response) {
-	body, err := ioutil.ReadAll(res.Body)
-	if err != nil {
-		panic(err)
-	}
-	t.Error(string(body))
-}
-
 func TestIndexHandler(t *testing.T) {
 	ctx := createTestingContext()
 	defer closeTestingContext(ctx)
@@ -135,11 +143,7 @@ func TestIndexHandler(t *testing.T) {
 	ts := httptest.NewServer(ctx.Router)
 	defer ts.Close()
 
-	res := testGet(ts.URL + ctx.Reverse("index"))
-	if res.StatusCode != http.StatusMovedPermanently {
-		t.Errorf("Actual status: (%d); Expected status: (%d)",
-			res.StatusCode, http.StatusMovedPermanently)
-	}
+	testGet(t, ts.URL+ctx.Reverse("index"), http.StatusMovedPermanently)
 }
 
 func TestSignInHandler(t *testing.T) {
@@ -152,28 +156,16 @@ func TestSignInHandler(t *testing.T) {
 	myURL := ts.URL + ctx.Reverse("sign-in")
 
 	// sign in front page
-	res := testGet(myURL)
-	if res.StatusCode != http.StatusOK {
-		t.Errorf("Actual status: (%d); Expected status: (%d)",
-			res.StatusCode, http.StatusOK)
-	}
+	testGet(t, myURL, http.StatusOK)
 
 	// failed sign in post
-	res = testPost(myURL, "")
-	if res.StatusCode != http.StatusOK {
-		t.Errorf("Actual status: (%d); Expected status: (%d)",
-			res.StatusCode, http.StatusOK)
-	}
+	testPost(t, myURL, "", http.StatusOK)
 
 	// successful sign in post
 	data := url.Values{}
 	data.Set("username", "admin")
 	data.Set("password", "pass")
-	res = testPost(myURL, data.Encode())
-	if res.StatusCode != http.StatusFound {
-		t.Errorf("Actual status: (%d); Expected status: (%d)",
-			res.StatusCode, http.StatusFound)
-	}
+	testPost(t, myURL, data.Encode(), http.StatusFound)
 }
 
 func TestSignOutHandler(t *testing.T) {
@@ -183,11 +175,7 @@ func TestSignOutHandler(t *testing.T) {
 	ts := httptest.NewServer(ctx.Router)
 	defer ts.Close()
 
-	res := testGet(ts.URL + ctx.Reverse("sign-out"))
-	if res.StatusCode != http.StatusFound {
-		t.Errorf("Actual status: (%d); Expected status: (%d)",
-			res.StatusCode, http.StatusFound)
-	}
+	testGet(t, ts.URL+ctx.Reverse("sign-out"), http.StatusFound)
 }
 
 func TestDomainList(t *testing.T) {
@@ -197,11 +185,7 @@ func TestDomainList(t *testing.T) {
 	ts := httptest.NewServer(ctx.Router)
 	defer ts.Close()
 
-	res := testGet(ts.URL + ctx.Reverse("domain-list"))
-	if res.StatusCode != http.StatusOK {
-		t.Errorf("Actual status: (%d); Expected status: (%d)",
-			res.StatusCode, http.StatusOK)
-	}
+	testGet(t, ts.URL+ctx.Reverse("domain-list"), http.StatusOK)
 }
 
 func TestDomainOverview(t *testing.T) {
@@ -211,11 +195,7 @@ func TestDomainOverview(t *testing.T) {
 	ts := httptest.NewServer(ctx.Router)
 	defer ts.Close()
 
-	res := testGet(ts.URL + ctx.Reverse("domain-overview", 1))
-	if res.StatusCode != http.StatusOK {
-		t.Errorf("Actual status: (%d); Expected status: (%d)",
-			res.StatusCode, http.StatusOK)
-	}
+	testGet(t, ts.URL+ctx.Reverse("domain-overview", 1), http.StatusOK)
 }
 
 func TestDomainCreate(t *testing.T) {
@@ -228,11 +208,7 @@ func TestDomainCreate(t *testing.T) {
 	myURL := ts.URL + ctx.Reverse("domain-create")
 
 	// create - GET
-	res := testGet(myURL)
-	if res.StatusCode != http.StatusOK {
-		t.Errorf("Actual status: (%d); Expected status: (%d)",
-			res.StatusCode, http.StatusOK)
-	}
+	testGet(t, myURL, http.StatusOK)
 
 	// create - POST with wrong parameters
 	data := url.Values{}
@@ -240,20 +216,11 @@ func TestDomainCreate(t *testing.T) {
 	data.Add("description", "a description")
 	data.Add("backupmx", "")
 	data.Add("active", "on")
-	res = testPost(myURL, data.Encode())
-	if res.StatusCode != http.StatusOK {
-		t.Errorf("Actual status: (%d); Expected status: (%d)",
-			res.StatusCode, http.StatusOK)
-	}
+	testPost(t, myURL, data.Encode(), http.StatusOK)
 
 	// create - POST with correct parameters
 	data.Set("name", "adomain.com")
-	res = testPost(myURL, data.Encode())
-	if res.StatusCode != http.StatusFound {
-		t.Errorf("Actual status: (%d); Expected status: (%d)",
-			res.StatusCode, http.StatusFound)
-		showResponseBody(t, res)
-	}
+	testPost(t, myURL, data.Encode(), http.StatusFound)
 
 	// check if the object stored in the db matches the inserted data
 	domain, err := types.GetDomainById(ctx.Database, 2)
@@ -285,31 +252,17 @@ func TestDomainUpdate(t *testing.T) {
 
 	myURL := ts.URL + ctx.Reverse("domain-update", 1)
 
-	res := testGet(myURL)
-	if res.StatusCode != http.StatusOK {
-		t.Errorf("Actual status: (%d); Expected status: (%d)",
-			res.StatusCode, http.StatusFound)
-	}
+	testGet(t, myURL, http.StatusOK)
 
 	data := url.Values{}
 	data.Add("name", "")
 	data.Add("description", "another description")
 	data.Add("backupmx", "on")
 	data.Add("active", "")
-	res = testPost(myURL, data.Encode())
-	if res.StatusCode != http.StatusOK {
-		t.Errorf("Actual status: (%d), Expected status: (%d)",
-			res.StatusCode, http.StatusOK)
-		showResponseBody(t, res)
-	}
+	testPost(t, myURL, data.Encode(), http.StatusOK)
 
 	data.Set("name", "anothername.com")
-	res = testPost(myURL, data.Encode())
-	if res.StatusCode != http.StatusFound {
-		t.Errorf("Actual status: (%d), Expected status: (%d)",
-			res.StatusCode, http.StatusFound)
-		showResponseBody(t, res)
-	}
+	testPost(t, myURL, data.Encode(), http.StatusFound)
 
 	// check if the object in the database has been updated
 	domain, err := types.GetDomainById(ctx.Database, 1)
@@ -345,17 +298,10 @@ func TestDomainDelete(t *testing.T) {
 
 	myURL := ts.URL + ctx.Reverse("domain-delete", 1)
 
-	res := testGet(myURL)
-	if res.StatusCode != http.StatusOK {
-		t.Errorf("Actual status: (%d); Expected status: (%d)",
-			res.StatusCode, http.StatusOK)
-	}
+	testGet(t, myURL, http.StatusOK)
 
-	res = testPost(myURL, "")
-	if res.StatusCode != http.StatusFound {
-		t.Errorf("Actual status: (%d); Expected status: (%d)",
-			res.StatusCode, http.StatusFound)
-	}
+	testPost(t, myURL, "", http.StatusFound)
+
 
 	// check if the object is still there
 	_, err := types.GetDomainById(ctx.Database, 1)
