@@ -173,7 +173,7 @@ func signInHandler(w http.ResponseWriter, r *http.Request, ctx *core.Context) {
 				session.Values["loggedin"] = true
 			}
 			session.Save(r, w)
-			http.Redirect(w, r, ctx.Reverse("index"), http.StatusMovedPermanently)
+			http.Redirect(w, r, ctx.Reverse("index"), http.StatusFound)
 			return
 		}
 
