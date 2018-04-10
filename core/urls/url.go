@@ -2,7 +2,6 @@ package urls
 
 import (
 	"context"
-	"errors"
 	"fmt"
 	"net/http"
 	"regexp"
@@ -11,11 +10,31 @@ import (
 	"github.com/julienschmidt/httprouter"
 )
 
-var (
-	argNotFound        = errors.New("arg not found in prefix")
-	methodNotSupported = errors.New("method not supported")
-	splitArg           = regexp.MustCompile(":[^/]+")
-)
+var splitArg = regexp.MustCompile(":[^/]+")
+
+type ErrMethodNotSupported string
+
+func (mn ErrMethodNotSupported) Error() string {
+	return fmt.Sprintf("Method '%s' not supported", mn)
+}
+
+type ErrReverseURLNotFound string
+
+func (rn ErrReverseURLNotFound) Error() string {
+	return fmt.Sprintf("Reverse URL for '%s' not found", rn)
+}
+
+type ErrPrefixAlreadyInserted string
+
+func (pn ErrPrefixAlreadyInserted) Error() string {
+	return fmt.Sprintf("The prefix '%s' is already inserted", pn)
+}
+
+type ErrNameAlreadyInserted string
+
+func (nn ErrNameAlreadyInserted) Error() string {
+	return fmt.Sprintf("The name '%s' is already inserted", nn)
+}
 
 type URL struct {
 	Prefix      string
@@ -38,7 +57,17 @@ func embedParams(next func(http.ResponseWriter, *http.Request)) httprouter.Handl
 	}
 }
 
-func (m *Manager) Add(url *URL) error {
+func (m *Manager) Add(url *URL) (err error) {
+	defer func() {
+		if r := recover(); r != nil {
+			err = ErrPrefixAlreadyInserted(url.Prefix)
+		}
+	}()
+
+	_, ok := m.urls[url.Name]
+	if ok {
+		return ErrNameAlreadyInserted(url.Name)
+	}
 	switch url.Method {
 	case "GET":
 		m.router.GET(url.Prefix, embedParams(url.HandlerFunc))
@@ -47,12 +76,14 @@ func (m *Manager) Add(url *URL) error {
 		m.router.POST(url.Prefix, embedParams(url.HandlerFunc))
 
 	default:
-		return methodNotSupported
+		return ErrMethodNotSupported(url.Method)
 	}
+
 	if url.Name != "" {
 		m.urls[url.Name] = url
 		m.reverse[url.Name] = splitArg.Split(url.Prefix, -1)
 	}
+
 	return nil
 }
 
@@ -63,7 +94,7 @@ func (m *Manager) GetParams(r *http.Request) httprouter.Params {
 func (m *Manager) Reverse(name string, args []interface{}) (string, error) {
 	tokens, ok := m.reverse[name]
 	if !ok {
-		return "", fmt.Errorf("reverse for (%s, %v) not found", name, args)
+		return "", ErrReverseURLNotFound(name)
 	}
 
 	var t []string
