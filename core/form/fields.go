@@ -1,8 +1,6 @@
 package form
 
-import (
-	"errors"
-)
+import "errors"
 
 var (
 	errRequired    = errors.New("This field cannot be empty.")
