@@ -6,7 +6,7 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/funnydog/measure/decimal"
+	"github.com/funnydog/mailadmin/decimal"
 )
 
 type FieldValue struct {
