@@ -2,38 +2,42 @@ package db
 
 import (
 	"database/sql"
-	"errors"
 	"fmt"
 	"strings"
 
 	"github.com/funnydog/mailadmin/core/config"
 
+	_ "github.com/lib/pq"
 	_ "github.com/mattn/go-sqlite3"
 )
 
-var (
-	databaseTypeNotSupported = errors.New("Database type not supported")
-	statementNotFound        = errors.New("Statement not found in the statements map[]")
-	statementAlreadyInserted = errors.New("Statement already inserted in the statements map[]")
-)
+type ErrDbTypeNotSupported string
+
+func (db ErrDbTypeNotSupported) Error() string {
+	return fmt.Sprintf("Database type '%s' is not supported", db)
+}
+
+type ErrStatementAlreadyPresent string
+
+func (sp ErrStatementAlreadyPresent) Error() string {
+	return fmt.Sprintf("Statement '%s' already present in the map", sp)
+}
+
+type ErrStatementNotFound string
+
+func (sn ErrStatementNotFound) Error() string {
+	return fmt.Sprintf("Statement '%s' not found in the map", sn)
+}
 
 type Database struct {
 	Db    *sql.DB
 	stmts map[string]*sql.Stmt
 }
 
-func (db *Database) FindStatement(key string) (*sql.Stmt, error) {
-	stmt, ok := db.stmts[key]
-	if !ok {
-		return nil, statementNotFound
-	}
-	return stmt, nil
-}
-
 func (db *Database) PrepareStatement(key, sql string) error {
 	_, ok := db.stmts[key]
 	if ok {
-		return statementAlreadyInserted
+		return ErrStatementAlreadyPresent(key)
 	}
 
 	stmt, err := db.Db.Prepare(sql)
@@ -43,6 +47,14 @@ func (db *Database) PrepareStatement(key, sql string) error {
 
 	db.stmts[key] = stmt
 	return nil
+}
+
+func (db *Database) FindStatement(key string) (*sql.Stmt, error) {
+	stmt, ok := db.stmts[key]
+	if !ok {
+		return nil, ErrStatementNotFound(key)
+	}
+	return stmt, nil
 }
 
 func (db *Database) Close() {
@@ -88,7 +100,7 @@ func Connect(conf *config.Configuration) (*Database, error) {
 
 		db, err = sql.Open("postgres", strings.Join(parameters, " "))
 	default:
-		err = databaseTypeNotSupported
+		err = ErrDbTypeNotSupported(conf.DBType)
 	}
 
 	if err != nil {
