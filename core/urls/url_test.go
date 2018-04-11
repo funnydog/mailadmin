@@ -45,6 +45,14 @@ func TestURLManager(t *testing.T) {
 		return
 	}
 
+	myURL.Method = "GET"
+	myURL.Name = ""
+	err = manager.Add(&myURL)
+	if err != nil {
+		t.Error(err)
+		return
+	}
+
 	reverse, err := manager.Reverse("friendly-name", nil)
 	if err != nil {
 		t.Error(err)
