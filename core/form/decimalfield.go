@@ -1,9 +1,6 @@
 package form
 
-import (
-	"fmt"
-	"github.com/funnydog/mailadmin/decimal"
-)
+import "github.com/funnydog/mailadmin/decimal"
 
 type DecimalField struct {
 	Required  bool
@@ -14,14 +11,14 @@ type DecimalField struct {
 func (f *DecimalField) Clean(value string) (interface{}, error) {
 	if value == "" {
 		if f.Required {
-			return nil, errRequired
+			return nil, ErrRequired
 		}
-		value = "0"
+		return nil, nil
 	}
 
 	d, err := decimal.Parse(value)
 	if err != nil {
-		return d, err
+		return nil, err
 	}
 
 	return d, nil
@@ -29,20 +26,28 @@ func (f *DecimalField) Clean(value string) (interface{}, error) {
 }
 
 func (f *DecimalField) Update(name string, value interface{}, fv *FieldValue) {
-	if value == nil {
-		value = ""
+	if f.Label != "" {
+		fv.Label = f.Label
 	} else {
+		fv.Label = name
+	}
+	fv.Required = f.Required
+
+	if f.Required && value == nil {
+		value = decimal.Decimal(0)
+	}
+
+	if value != nil {
 		var trunc int
-		if f.Precision > 0 && f.Precision <= 4 {
+		if 0 < f.Precision && f.Precision <= 4 {
 			trunc = 4 - f.Precision
-		} else if f.Precision == 0 {
+		} else {
 			trunc = 5
 		}
 
-		fv.Value = fmt.Sprint(value.(decimal.Decimal))
+		fv.Value = value.(decimal.Decimal).String()
 		fv.Value = fv.Value[0:(len(fv.Value) - trunc)]
+	} else {
+		fv.Value = ""
 	}
-
-	fv.Label = f.Label
-	fv.Required = f.Required
 }

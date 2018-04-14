@@ -3,10 +3,8 @@ package form
 import "errors"
 
 var (
-	errRequired    = errors.New("This field cannot be empty.")
-	lengthExceeded = errors.New("Length exceeded.")
-	valueNotValid  = errors.New("Value not valid.")
-	emailNotValid  = errors.New("Please insert a valid email address.")
+	ErrRequired     = errors.New("This field cannot be empty.")
+	ErrInvalidValue = errors.New("Value not valid.")
 )
 
 type FormField interface {

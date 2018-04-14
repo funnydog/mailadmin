@@ -6,35 +6,29 @@ type CheckboxField struct {
 }
 
 func (f *CheckboxField) Clean(value string) (interface{}, error) {
-	if value == "" {
-		if f.Required {
-			return false, errRequired
-		}
-
-		return false, nil
+	if value != "" {
+		return true, nil
 	}
 
-	return true, nil
+	if f.Required {
+		return nil, ErrRequired
+	}
+
+	return false, nil
 }
 
 func (f *CheckboxField) Update(name string, value interface{}, fv *FieldValue) {
-	if value == nil {
-		value = false
-	}
-
 	if f.Label != "" {
 		fv.Label = f.Label
 	} else {
 		fv.Label = name
 	}
 
-	if value == nil {
-		fv.Value = ""
-	} else if value.(bool) {
-		fv.Value = "checked"
+	fv.Required = f.Required
+
+	if value != nil && value.(bool) {
+		fv.Value = "on"
 	} else {
 		fv.Value = ""
 	}
-
-	fv.Required = f.Required
 }

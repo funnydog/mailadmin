@@ -1,6 +1,14 @@
 package form
 
-import "net/mail"
+import (
+	"errors"
+	"net/mail"
+)
+
+var (
+	ErrInvalidEmail = errors.New("Please insert a valid email address.")
+	emailParser     = mail.AddressParser{}
+)
 
 type EmailField struct {
 	Required bool
@@ -10,31 +18,31 @@ type EmailField struct {
 func (f *EmailField) Clean(value string) (interface{}, error) {
 	if value == "" {
 		if f.Required {
-			return "", errRequired
+			return nil, ErrRequired
 		}
-		return "", nil
+		return nil, nil
 	}
 
-	parser := mail.AddressParser{}
-	_, err := parser.Parse(value)
+	_, err := emailParser.Parse(value)
 	if err != nil {
-		return "", emailNotValid
+		return nil, ErrInvalidEmail
 	}
 
 	return value, nil
 }
 
 func (f *EmailField) Update(name string, value interface{}, fv *FieldValue) {
-	if value == nil {
-		value = ""
-	}
-
-	if value == nil {
-		fv.Value = ""
+	if f.Label != "" {
+		fv.Label = f.Label
 	} else {
-		fv.Value = value.(string)
+		fv.Label = name
 	}
 
-	fv.Label = f.Label
 	fv.Required = f.Required
+
+	if value != nil {
+		fv.Value = value.(string)
+	} else {
+		fv.Value = ""
+	}
 }
