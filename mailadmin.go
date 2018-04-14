@@ -253,7 +253,7 @@ func domainOverview(w http.ResponseWriter, r *http.Request, ctx *core.Context) {
 
 func domainForm() form.Form {
 	myForm := form.Create()
-	myForm.Add("name", &form.TextField{Label: "Name", Required: true})
+	myForm.Add("name", &form.TextField{Label: "Name", Required: true, MaxLength: 50})
 	myForm.Add("description", &form.TextField{Label: "Description"})
 	myForm.Add("backupmx", &form.CheckboxField{Label: "BackupMX"})
 	myForm.Add("active", &form.CheckboxField{Label: "Active"})
