@@ -2,7 +2,7 @@
 <div class="input-group mb-3">
   <div class="input-group-prepend">
     <div class="input-group-text">
-      <input {{ if .Value }}checked{{ end }} id="{{ .Name }}" name="{{ .Name }}" type="checkbox" {{ if .Required }}required {{end }}/>
+      <input {{ if .Value }}checked{{ end }} id="{{ .Name }}" name="{{ .Name }}" type="checkbox" {{ if .Required }}required {{end }}>
     </div>
   </div>
   <label class="form-control{{ if .Error }} is-invalid{{ else if .Submitted }} is-valid{{ end }}" for="{{ .Name }}">{{ .Label }}</label>

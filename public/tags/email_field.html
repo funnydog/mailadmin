@@ -6,7 +6,7 @@
       <span data-feather="mail"></span>
     </div>
   </div>
-  <input class="form-control{{ if .Error }} is-invalid{{ else if .Submitted }} is-valid{{ end }}" id="{{ .Name }}" name="{{ .Name }}" placeholder="{{ .Label }}" type="text" value="{{ .Value }}" {{ if .Required }}required {{ end }}/>
+  <input class="form-control{{ if .Error }} is-invalid{{ else if .Submitted }} is-valid{{ end }}" id="{{ .Name }}" name="{{ .Name }}" placeholder="{{ .Label }}" type="text" value="{{ .Value }}" {{ if .Required }}required {{ end }}>
   {{ if .Error }}
   <div class="invalid-feedback">{{ .Error }}</div>
   {{ else if .Submitted }}
