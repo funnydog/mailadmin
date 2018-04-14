@@ -161,25 +161,19 @@ func (f *Form) SetError(fieldname, err string) {
 func (f *Form) Validate(r *http.Request) (valid bool) {
 	valid = true
 	for key, field := range f.fields {
-		var (
-			value string
-			clean interface{}
-		)
-		value = r.FormValue(key)
-		clean, err := field.Clean(value)
+		value := f.Values[key]
+		value.Submitted = true
 
-		fieldValue := f.Values[key]
-
-		field.Update(key, clean, fieldValue)
+		clean, err := field.Clean(r.FormValue(key))
 		if err != nil {
-			fieldValue.Value = value
-			fieldValue.Error = fmt.Sprint(err)
+			field.Update(key, nil, value)
+			value.Value = r.FormValue(key)
+			value.Error = err.Error()
 			valid = false
 		} else {
+			field.Update(key, clean, value)
 			f.cleanData[key] = clean
 		}
-
-		fieldValue.Submitted = true
 	}
 
 	return valid
