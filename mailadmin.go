@@ -651,6 +651,6 @@ func aliasDelete(w http.ResponseWriter, r *http.Request, ctx *core.Context) {
 		panic(err)
 	} else {
 		_ = addFlash(w, r, ctx.Store, "Alias deleted successfully")
-		http.Redirect(w, r, ctx.Reverse("alias-list", alias.Id.Int64), http.StatusFound)
+		http.Redirect(w, r, ctx.Reverse("alias-list", alias.Domain.Int64), http.StatusFound)
 	}
 }
