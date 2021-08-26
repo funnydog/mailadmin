@@ -1,23 +1,23 @@
 {{ define "sidebar" }}{{ template "mailbox_sidebar" . }}{{ end }}
 {{ define "content" }}
-<div class="row">
-  <div class="col-sm">
-    <h5>Delete The Mailbox</h5>
-  </div>
-</div>
-<div class="alert alert-warning" role="alert">
-  <dl class="dl-horizontal">
-    <dt>E-Mail</dt>
-    <dd>{{ .mailbox.Email }}</dd>
-    <dt>Active</dt>
-    <dd>{{ if .mailbox.Active }}Yes{{ else }}No{{ end }}</dd>
-  </dl>
-  <p class="text-danger">Are you sure you want to delete the mailbox above?</p>
-</div>
+<h5>Delete The Mailbox</h5>
+<table class="table table-hover">
+  <tbody>
+    <tr>
+      <th scope="row">Address</th>
+      <td>{{ .mailbox.Email }}</td>
+    </tr>
+    <tr>
+      <th scope="row">Active</th>
+      <td>{{ if .mailbox.Active }}Yes{{ else }}No{{ end }}</td>
+    </tr>
+  </tbody>
+</table>
+<p class="text-danger fw-bold">Are you sure you want to delete the mailbox above?</p>
 <form action="" method="post" class="form">
   {{ .csrfField }}
-  <div class="form-group">
-    <a class="btn btn-primary btn-default" href="{{ reverse "mailbox-list" .domain.Id.Value }}">
+  <div class="mt-3">
+    <a class="btn btn-primary btn-default" href="javascript:history.back();">
       <span data-feather="arrow-up-left"></span> No, go back
     </a>
     <button class="btn btn-danger" type="submit">

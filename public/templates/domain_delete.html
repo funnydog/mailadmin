@@ -1,22 +1,72 @@
 {{ define "title" }}Delete the domain{{ end }}
-{{ define "content" }}
-<div class="alert alert-warning" role="alert">
-  <dl class="dl-horizontal">
-    <dt>Name</dt>
-    <dd>{{ .domain.Name }}</dd>
-    <dt>Description</dt>
-    <dd>{{ .domain.Description }}</dd>
-    <dt>BackupMX</dt>
-    <dd>{{ if .domain.BackupMX }}Yes{{ else }}No{{ end }}</dd>
-    <dt>Active</dt>
-    <dd>{{ if .domain.Active }}Yes{{ else }}No{{ end }}</dd>
-  </dl>
-  <p class="text-danger">Are you sure you want to delete the domain above?</p>
+{{ define "sidebar" }}
+<div class="sidebar-sticky">
+  <ul class="nav nav-tabs nav-tabs-vertical nav-tabs-left flex-column">
+    <li class="nav-item">
+      <a class="nav-link" href="{{ reverse "domain-list" }}">
+	<span data-feather="arrow-up-left"></span> Home
+      </a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link" href="{{ reverse "domain-overview" .domain.Id.Value }}">
+	<span data-feather="archive"></span> Overview
+      </a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link" href="{{ reverse "domain-update" .domain.Id.Value }}">
+	<span data-feather="edit-2"></span> Change
+      </a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link" href="{{ reverse "mailbox-list" .domain.Id.Value }}">
+	<span data-feather="inbox"></span> Mailboxes
+      </a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link" href="{{ reverse "alias-list" .domain.Id.Value }}">
+	<span data-feather="mail"></span> Aliases
+      </a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link active" href="{{ reverse "domain-delete" .domain.Id.Value }}">
+	<span data-feather="trash"></span> Delete
+	<span class="visually-hidden">(current)</span>
+      </a>
+    </li>
+  </ul>
 </div>
+{{ end }}
+{{ define "content" }}
+<div class="card mb-3">
+  <h4 class="card-header">{{ .domain.Name }}</h4>
+  <div class="card-body">
+    <table class="table table-hover">
+      <tbody>
+	<tr>
+	  <th scope="row">Active</th>
+	  <td>{{ if .domain.Active }}Yes{{ else }}No{{ end }}</td>
+	</tr>
+	<tr>
+	  <th scope="row">Backup MX</th>
+	  <td>{{ if .domain.BackupMX }}Yes{{ else }}No{{ end }}</td>
+	</tr>
+	<tr>
+	  <th scope="row">Created on</th>
+	  <td>{{ .domain.Created.Format "2006-01-02 15:04 MST" }}</td>
+	</tr>
+	<tr>
+	  <th scope="row">Modified on</th>
+	  <td>{{ .domain.Modified.Format "2006-01-02 15:04 MST" }}</td>
+	</tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+<h4 class="text-danger">Are you sure you want to delete the domain above?</h4>
 <form action="" method="post" class="form">
   {{ .csrfField }}
-  <div class="form-group">
-    <a class="btn btn-primary btn-default" href="{{ reverse "domain-update" .domain.Id.Value }}">
+  <div class="mt-3">
+    <a class="btn btn-primary btn-default" href="javascript:history.back();">
       <span data-feather="arrow-up-left"></span> No, go back
     </a>
     <button class="btn btn-primary btn-danger" type="submit">

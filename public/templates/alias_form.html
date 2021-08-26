@@ -5,9 +5,9 @@
     <h5>{{ .Title }}</h5>
   </div>
 </div>
-<form action="" method="post">
+<form class="row" action="" method="post">
   {{ .csrfField }}
-  <div class="mb-3">
+  <div class="col mb-3">
     {{ template "emailfield" .form.Values.source }}
   </div>
   <div class="mb-3">
