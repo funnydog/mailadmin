@@ -432,11 +432,11 @@ func mailboxSave(w http.ResponseWriter, r *http.Request, ctx *core.Context) {
 		return
 	} else if !form.Validate(r) {
 		// fallthrough
+	} else if email := form.GetString("email"); !strings.HasSuffix(email, "@"+domain.Name) {
+		form.SetError("email", "This email doesn't end with @"+domain.Name)
 	} else if password := form.GetString("password"); password == "" && pkerr != nil {
 		// the combination of values is not valid
 		form.SetError("password", "This field cannot be empty")
-	} else if email := form.GetString("email"); !strings.HasSuffix(email, "@"+domain.Name) {
-		form.SetError("email", "This email doesn't end with @"+domain.Name)
 	} else {
 		mailbox.Email = email
 		mailbox.Active = form.GetBool("active")
