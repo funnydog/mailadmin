@@ -24,6 +24,7 @@ type Context struct {
 	Router          *httprouter.Router
 	Store           *sessions.CookieStore
 	Middleware      []Middleware
+	AllowedURL      map[string]bool
 }
 
 func (c *Context) Close() {
@@ -116,6 +117,15 @@ func (c *Context) Static(path string) string {
 	return c.URLManager.Static(path)
 }
 
+func (c *Context) AddAllowedURL(path string) {
+	c.AllowedURL[path] = true
+}
+
+func (c *Context) IsURLAllowed(path string) bool {
+	_, exists := c.AllowedURL[path]
+	return exists
+}
+
 func (c *Context) ListenAndServe() error {
 	var router http.Handler = c.Router
 	for _, m := range c.Middleware {
@@ -152,6 +162,11 @@ func CreateContextFromConf(conf *config.Configuration) (*Context, error) {
 		conf.StaticPrefix = "/static"
 	}
 
+	allowedURL := map[string]bool{}
+	for _, allowed := range conf.AllowedURLs {
+		allowedURL[allowed] = true
+	}
+
 	router := httprouter.New()
 	router.PanicHandler = badRequest
 	if conf.StaticDir != "" {
@@ -179,6 +194,7 @@ func CreateContextFromConf(conf *config.Configuration) (*Context, error) {
 		URLManager:      &urlManager,
 		Store:           sessions.NewCookieStore([]byte(conf.CookieKey)),
 		Router:          router,
+		AllowedURL:      allowedURL,
 	}, nil
 }
 

@@ -12,10 +12,13 @@
     "dbport": "",
     "dbsslmode": "",
     "baseprefix": "/mailadmin",
-    "staticprefix": "/static",
+    "staticprefix": "/mailadmin/static",
     "staticdir": "./public/static/",
     "templatedir": "./public/templates/",
     "tagsdir": "./public/tags/",
     "extenddir": "./public/extend/",
+    "allowed_urls": [
+	"/mailadmin/static/bootstrap.min.css"
+    ],
     "debug": true
 }

@@ -140,13 +140,15 @@ func configureContext(ctx *core.Context) {
 
 	// check if the user is logged
 	ctx.AddMiddleware(func(h http.Handler) http.Handler {
-		allowed := ctx.Reverse("sign-in")
+		// always allow the sign-in url
+		sign_in := ctx.Reverse("sign-in")
+		ctx.AddAllowedURL(sign_in)
 		return http.HandlerFunc(
 			func(w http.ResponseWriter, r *http.Request) {
-				if r.URL.Path != allowed {
+				if !ctx.IsURLAllowed(r.URL.Path) {
 					session, err := ctx.Store.Get(r, "session")
 					if err == nil && session.Values["loggedin"] != true {
-						http.Redirect(w, r, allowed, http.StatusFound)
+						http.Redirect(w, r, sign_in, http.StatusFound)
 						return
 					}
 				}
