@@ -1,7 +1,7 @@
 {
     "username": "admin",
     "password": "$6$S.8nHrObJ8COAY1B$IjnhQU6oxMPaByrkHj9mJHuWVGK36brc0oSkr.ViOR1fHEev4XmF/ebAGUS6O7GbZ.3mzPkfkOUH.y54hEjXu.",
-    "serverhost": "",
+    "serverhost": "127.0.0.1",
     "serverport": "8080",
     "servercert": "",
     "serverkey": "",
