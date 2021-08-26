@@ -1,15 +1,11 @@
 {{ define "checkboxfield" }}
-<div class="input-group mb-3">
-  <div class="input-group-prepend">
-    <div class="input-group-text">
-      <input {{ if .Value }}checked{{ end }} id="{{ .Name }}" name="{{ .Name }}" type="checkbox" {{ if .Required }}required {{end }}>
-    </div>
-  </div>
-  <label class="form-control{{ if .Error }} is-invalid{{ else if .Submitted }} is-valid{{ end }}" for="{{ .Name }}">{{ .Label }}</label>
-  {{ if .Error }}
-  <div class="invalid-feedback">{{ .Error }}</div>
-  {{ else if .Submitted }}
-  <div class="valid-feedback">Looks good!</div>
-  {{ end }}
+<div class="form-check form-switch">
+  <input class="form-check-input" {{ if .Value }}checked{{ end }} id="{{ .Name }}" name="{{ .Name }}" type="checkbox" {{ if .Required }}required {{end }}>
+  <label class="form-check-label{{ if .Error }} is-invalid{{ else if .Submitted }} is-valid{{ end }}" for="{{ .Name }}">{{ .Label }}</label>
 </div>
+{{ if .Error }}
+<div class="invalid-feedback">{{ .Error }}</div>
+{{ else if .Submitted }}
+<div class="valid-feedback">Looks good!</div>
+{{ end }}
 {{ end }}

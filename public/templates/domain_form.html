@@ -4,32 +4,28 @@
   <ul class="nav nav-tabs nav-tabs-vertical nav-tabs-left flex-column">
     <li class="nav-item">
       <a class="nav-link" href="{{ reverse "domain-list" }}">
-	<span data-feather="arrow-up-left"></span>
-	Home
+	<span data-feather="arrow-up-left"></span> Home
       </a>
     </li>
     <li class="nav-item">
       <a class="nav-link" href="{{ reverse "domain-overview" .domain.Id.Value }}">
-	<span data-feather="archive"></span>
-	Overview
+	<span data-feather="archive"></span> Overview
       </a>
     </li>
     <li class="nav-item">
       <a class="nav-link active" href="{{ reverse "domain-update" .domain.Id.Value }}">
-	<span data-feather="edit-2"></span>
-	Change <span class="sr-only">(current)</span>
+	<span data-feather="edit-2"></span> Change
+	<span class="visually-hidden">(current)</span>
       </a>
     </li>
     <li class="nav-item">
       <a class="nav-link" href="{{ reverse "mailbox-list" .domain.Id.Value }}">
-	<span data-feather="inbox"></span>
-	Mailboxes
+	<span data-feather="inbox"></span> Mailboxes
       </a>
     </li>
     <li class="nav-item">
       <a class="nav-link" href="{{ reverse "alias-list" .domain.Id.Value }}">
-	<span data-feather="mail"></span>
-	Aliases
+	<span data-feather="mail"></span> Aliases
       </a>
     </li>
   </ul>
@@ -43,19 +39,24 @@
   </div>
 </div>
 <form action="" method="post" class="form">
-  {{ template "textfield" .form.Values.name }}
-  {{ template "textfield" .form.Values.description }}
-  {{ template "checkboxfield" .form.Values.backupmx }}
-  {{ template "checkboxfield" .form.Values.active }}
-
   {{ .csrfField }}
-
-  <div class="form-group">
-    <button class="btn btn-default" type="reset">
-      <span data-feather="refresh-cw"></span> Revert
-    </button>
+  <div class="mb-3">
+    {{ template "textfield" .form.Values.name }}
+  </div>
+  <div class="mb-3">
+    {{ template "textfield" .form.Values.description }}
+  </div>
+  <div class="mb-3">
+    <label class="form-label">Domain options</label>
+    {{ template "checkboxfield" .form.Values.backupmx }}
+    {{ template "checkboxfield" .form.Values.active }}
+  </div>
+  <div class="mt-3">
     <button class="btn btn-primary" type="submit">
       <span data-feather="save"></span> Confirm
+    </button>
+    <button class="btn btn-secondary" type="reset">
+      <span data-feather="refresh-cw"></span> Revert
     </button>
   </div>
 </form>

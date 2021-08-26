@@ -6,18 +6,23 @@
   </div>
 </div>
 <form action="" method="post">
-  {{ template "emailfield" .form.Values.email }}
-  {{ template "passfield" .form.Values.password }}
-  {{ template "checkboxfield" .form.Values.active }}
-
   {{ .csrfField }}
-
-  <div class="form-group">
-    <button class="btn btn-default" type="reset">
-      <span data-feather="refresh-cw"></span> Revert
-    </button>
+  <div class="mb-3">
+    {{ template "emailfield" .form.Values.email }}
+  </div>
+  <div class="mb-3">
+    {{ template "passfield" .form.Values.password }}
+  </div>
+  <div class="mb-3">
+    <label class="form-label">Mailbox options</label>
+    {{ template "checkboxfield" .form.Values.active }}
+  </div>
+  <div class="mt-3">
     <button class="btn btn-default btn-primary" type="submit">
       <span data-feather="save"></span> Confirm
+    </button>
+    <button class="btn btn-secondary" type="reset">
+      <span data-feather="refresh-cw"></span> Revert
     </button>
   </div>
 </form>

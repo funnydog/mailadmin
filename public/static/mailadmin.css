@@ -11,6 +11,9 @@ body {
     vertical-align: text-bottom;
 }
 
+h5 { padding-bottom: .5rem; margin-bottom: 1rem; border-bottom: 1px solid #dee2e6; }
+tr.text-muted td a { color: inherit; }
+
 /*
  * Sidebar
  */
@@ -32,11 +35,6 @@ body {
     padding-top: .5rem;
     overflow-x: hidden;
     overflow-y: auto; 		/* scrollable contents if viewport is shorter than content. */
-}
-
-.sidebar .nav-link {
-    font-weight: 500;
-    color: #333;
 }
 
 .sidebar .nav-link {
