@@ -112,6 +112,10 @@ func (c *Context) Reverse(name string, args ...interface{}) string {
 	return url
 }
 
+func (c *Context) Static(path string) string {
+	return c.URLManager.Static(path)
+}
+
 func (c *Context) ListenAndServe() error {
 	var router http.Handler = c.Router
 	for _, m := range c.Middleware {
@@ -156,7 +160,7 @@ func CreateContextFromConf(conf *config.Configuration) (*Context, error) {
 			http.Dir(conf.StaticDir),
 		)
 	}
-	urlManager := urls.CreateManager(router)
+	urlManager := urls.CreateManager(conf, router)
 
 	templates, err := template.Create(conf, &urlManager)
 	if err != nil {

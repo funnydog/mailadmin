@@ -65,7 +65,7 @@ func Create(conf *config.Configuration, um *urls.Manager) (Manager, error) {
 			return um.Reverse(url, args)
 		},
 		"static": func(path string) string {
-			return conf.StaticPrefix + "/" + path
+			return um.Static(path)
 		},
 	}
 

@@ -4,9 +4,11 @@ import (
 	"context"
 	"fmt"
 	"net/http"
+	"path"
 	"regexp"
 	"strings"
 
+	"github.com/funnydog/mailadmin/core/config"
 	"github.com/julienschmidt/httprouter"
 )
 
@@ -44,9 +46,10 @@ type URL struct {
 }
 
 type Manager struct {
-	router  *httprouter.Router
-	urls    map[string]*URL
-	reverse map[string][]string
+	router       *httprouter.Router
+	urls         map[string]*URL
+	reverse      map[string][]string
+	staticPrefix string
 }
 
 func embedParams(next func(http.ResponseWriter, *http.Request)) httprouter.Handle {
@@ -108,10 +111,15 @@ func (m *Manager) Reverse(name string, args []interface{}) (string, error) {
 	return strings.Join(t, ""), nil
 }
 
-func CreateManager(router *httprouter.Router) Manager {
+func (m *Manager) Static(urlpath string) string {
+	return path.Join(m.staticPrefix, urlpath)
+}
+
+func CreateManager(conf *config.Configuration, router *httprouter.Router) Manager {
 	return Manager{
 		router,
 		map[string]*URL{},
 		map[string][]string{},
+		conf.StaticPrefix,
 	}
 }

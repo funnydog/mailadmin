@@ -4,13 +4,15 @@ import (
 	"net/http"
 	"testing"
 
+	"github.com/funnydog/mailadmin/core/config"
 	"github.com/julienschmidt/httprouter"
 )
 
 func TestURLManager(t *testing.T) {
 	router := httprouter.New()
 
-	manager := CreateManager(router)
+	conf := config.Configuration{}
+	manager := CreateManager(&conf, router)
 
 	myURL := URL{
 		Prefix:      "/",
