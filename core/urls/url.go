@@ -15,25 +15,25 @@ var splitArg = regexp.MustCompile(":[^/]+")
 type ErrMethodNotSupported string
 
 func (mn ErrMethodNotSupported) Error() string {
-	return fmt.Sprintf("Method '%s' not supported", mn)
+	return fmt.Sprintf("Method '%s' not supported", string(mn))
 }
 
 type ErrReverseURLNotFound string
 
 func (rn ErrReverseURLNotFound) Error() string {
-	return fmt.Sprintf("Reverse URL for '%s' not found", rn)
+	return fmt.Sprintf("Reverse URL for '%s' not found", string(rn))
 }
 
 type ErrPrefixAlreadyInserted string
 
 func (pn ErrPrefixAlreadyInserted) Error() string {
-	return fmt.Sprintf("The prefix '%s' is already inserted", pn)
+	return fmt.Sprintf("The prefix '%s' is already inserted", string(pn))
 }
 
 type ErrNameAlreadyInserted string
 
 func (nn ErrNameAlreadyInserted) Error() string {
-	return fmt.Sprintf("The name '%s' is already inserted", nn)
+	return fmt.Sprintf("The name '%s' is already inserted", string(nn))
 }
 
 type URL struct {

@@ -5,7 +5,7 @@ import "fmt"
 type ErrChoiceNotFound string
 
 func (nf ErrChoiceNotFound) Error() string {
-	return fmt.Sprintf("Choice '%s' not found", nf)
+	return fmt.Sprintf("Choice '%s' not found", string(nf))
 }
 
 type Choice struct {

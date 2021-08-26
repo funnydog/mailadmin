@@ -14,19 +14,19 @@ import (
 type ErrDbTypeNotSupported string
 
 func (db ErrDbTypeNotSupported) Error() string {
-	return fmt.Sprintf("Database type '%s' is not supported", db)
+	return fmt.Sprintf("Database type '%s' is not supported", string(db))
 }
 
 type ErrStatementAlreadyPresent string
 
 func (sp ErrStatementAlreadyPresent) Error() string {
-	return fmt.Sprintf("Statement '%s' already present in the map", sp)
+	return fmt.Sprintf("Statement '%s' already present in the map", string(sp))
 }
 
 type ErrStatementNotFound string
 
 func (sn ErrStatementNotFound) Error() string {
-	return fmt.Sprintf("Statement '%s' not found in the map", sn)
+	return fmt.Sprintf("Statement '%s' not found in the map", string(sn))
 }
 
 type Database struct {
