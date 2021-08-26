@@ -1,9 +1,7 @@
 {{ define "textfield" }}
 {{ if .Label }}<label class="form-label" for="{{ .Name }}">{{ .Label }}{{ if .Required }} *{{ end }}</label>{{ end }}
-<input class="form-control{{ if .Error }} is-invalid{{ else if .Submitted }} is-valid{{ end }}" id="{{ .Name }}" name="{{ .Name }}" placeholder="{{ .Label }}" type="text" value="{{ .Value }}" {{ if .Required }}required {{ end }}{{ if .Data }}maxlength="{{ .Data }}"{{ end }}>
+<input class="form-control{{ if .Error }} is-invalid{{ else if .Submitted }} is-valid{{ end }}" id="{{ .Name }}" name="{{ .Name }}" placeholder="{{ .Label }}" type="text" value="{{ .Value }}"{{ if .Error }} aria-describedby="{{ .Name }}Feedback"{{ end }}{{ if .Required }} required{{ end }}{{ if .Data }} maxlength="{{ .Data }}"{{ end }}>
 {{ if .Error }}
-<div class="invalid-feedback">{{ .Error }}</div>
-{{ else if .Submitted }}
-<div class="valid-feedback">Looks good!</div>
+<div class="invalid-feedback" id="{{ .Name }}Feedback">{{ .Error }}</div>
 {{ end }}
 {{ end }}

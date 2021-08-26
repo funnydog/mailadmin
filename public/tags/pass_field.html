@@ -1,14 +1,12 @@
 {{ define "passfield" }}
 {{ if .Label }}<label class="form-label" for="{{ .Name }}">{{ .Label }}{{ if .Required }} *{{ end }}</label>{{ end }}
-<div class="input-group">
+<div class="input-group{{ if .Submitted }} has-validation{{ end }}">
   <div class="input-group-text">
     <span data-feather="lock"></span>
   </div>
-  <input class="form-control{{ if .Error }} is-invalid{{ else if .Submitted }} is-valid{{ end }}" id="{{ .Name }}" name="{{ .Name }}" placeholder="{{ .Label }}" type="password" value="{{ .Value }}" {{ if .Required }}required {{ end }}>
+  <input class="form-control{{ if .Error }} is-invalid{{ else if .Submitted }} is-valid{{ end }}" id="{{ .Name }}" name="{{ .Name }}" placeholder="{{ .Label }}" type="password" value="{{ .Value }}"{{ if .Error }}aria-describedby="{{ .Name }}Feedback"{{ end }}{{ if .Required }} required {{ end }}>
+  {{ if .Error }}
+  <div id="{{ .Name }}Feedback" class="invalid-feedback">{{ .Error }}</div>
+  {{ end }}
 </div>
-{{ if .Error }}
-<div class="invalid-feedback">{{ .Error }}</div>
-{{ else if .Submitted }}
-<div class="valid-feedback">Looks good!</div>
-{{ end }}
 {{ end }}

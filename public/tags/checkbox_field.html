@@ -1,11 +1,9 @@
 {{ define "checkboxfield" }}
 <div class="form-check form-switch">
-  <input class="form-check-input" {{ if .Value }}checked{{ end }} id="{{ .Name }}" name="{{ .Name }}" type="checkbox" {{ if .Required }}required {{end }}>
+  <input class="form-check-input"{{ if .Value }} checked{{ end }} id="{{ .Name }}" name="{{ .Name }}" type="checkbox"{{ if .Error }} aria-describedby="{{ .Name }}Feedback"{{ end }}{{ if .Required }} required {{end }}>
   <label class="form-check-label{{ if .Error }} is-invalid{{ else if .Submitted }} is-valid{{ end }}" for="{{ .Name }}">{{ .Label }}</label>
+  {{ if .Error }}
+  <div class="invalid-feedback" id="{{ .Name }}Feedback">{{ .Error }}</div>
+  {{ end }}
 </div>
-{{ if .Error }}
-<div class="invalid-feedback">{{ .Error }}</div>
-{{ else if .Submitted }}
-<div class="valid-feedback">Looks good!</div>
-{{ end }}
 {{ end }}
