@@ -169,6 +169,9 @@ func CreateContextFromConf(conf *config.Configuration) (*Context, error) {
 
 	router := httprouter.New()
 	router.PanicHandler = badRequest
+
+	// if StaticDir is empty don't set up the server for static
+	// files.
 	if conf.StaticDir != "" {
 		router.ServeFiles(
 			conf.StaticPrefix+"/*filepath",
