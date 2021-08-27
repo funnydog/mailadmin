@@ -280,28 +280,28 @@ func domainSave(w http.ResponseWriter, r *http.Request, ctx *core.Context) {
 		title = "Change The Domain"
 	}
 
-	myForm := domainForm()
+	form := domainForm()
 	data := map[string]interface{}{
 		"PK":             pk,
 		"Title":          title,
-		"form":           myForm,
+		"form":           form,
 		"domain":         domain,
 		csrf.TemplateTag: csrf.TemplateField(r),
 	}
 
 	if r.Method == "GET" {
-		myForm.SetString("name", domain.Name)
-		myForm.SetString("description", domain.Description)
-		myForm.SetBool("backupmx", domain.BackupMX)
-		myForm.SetBool("active", domain.Active)
+		form.SetString("name", domain.Name)
+		form.SetString("description", domain.Description)
+		form.SetBool("backupmx", domain.BackupMX)
+		form.SetBool("active", domain.Active)
 	} else if r.Method != "POST" {
 		// not supported
 		return
-	} else if myForm.Validate(r) {
-		domain.Name = myForm.GetString("name")
-		domain.Description = myForm.GetString("description")
-		domain.BackupMX = myForm.GetBool("backupmx")
-		domain.Active = myForm.GetBool("active")
+	} else if form.Validate(r) {
+		domain.Name = form.GetString("name")
+		domain.Description = form.GetString("description")
+		domain.BackupMX = form.GetBool("backupmx")
+		domain.Active = form.GetBool("active")
 
 		var err error
 		var flash string
