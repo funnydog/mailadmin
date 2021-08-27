@@ -430,41 +430,47 @@ func mailboxSave(w http.ResponseWriter, r *http.Request, ctx *core.Context) {
 	} else if r.Method != "POST" {
 		// not supported
 		return
-	} else if !form.Validate(r) {
-		// fallthrough
-	} else if email := form.GetString("email"); !strings.HasSuffix(email, "@"+domain.Name) {
-		form.SetError("email", "This email doesn't end with @"+domain.Name)
-	} else if password := form.GetString("password"); password == "" && pkerr != nil {
-		// the combination of values is not valid
-		form.SetError("password", "This field cannot be empty")
 	} else {
-		mailbox.Email = email
-		mailbox.Active = form.GetBool("active")
+		// form validation
+		valid := form.Validate(r)
+		if email := r.FormValue("email"); !strings.HasSuffix(email, "@"+domain.Name) {
+			valid = false
+			form.SetError("email", "The address doesn't end with @"+domain.Name)
+		}
+		if password := r.FormValue("password"); password == "" && pkerr != nil {
+			valid = false
+			form.SetError("password", "This field cannot be empty")
+		}
 
-		// hash the password
-		if password != "" {
+		// submit
+		if valid {
+			mailbox.Email = form.GetString("email")
+			mailbox.Active = form.GetBool("active")
+
+			// hash the password
+			password := form.GetString("password")
 			hash, err := sha512crypt.GenerateFromPassword([]byte(password))
 			if err != nil {
 				panic(err)
 			}
 			mailbox.Password = string(hash)
-		}
 
-		var flash string
-		if pkerr != nil {
-			err = mailbox.Create(ctx.Database)
-			flash = "Mailbox created successfully"
-		} else {
-			err = mailbox.Update(ctx.Database)
-			flash = "Mailbox updated successfully"
-		}
-		if err != nil {
-			panic(err)
-		}
+			var flash string
+			if pkerr != nil {
+				err = mailbox.Create(ctx.Database)
+				flash = "Mailbox created successfully"
+			} else {
+				err = mailbox.Update(ctx.Database)
+				flash = "Mailbox updated successfully"
+			}
+			if err != nil {
+				panic(err)
+			}
 
-		_ = addFlash(w, r, ctx.Store, flash)
-		http.Redirect(w, r, ctx.Reverse("mailbox-list", domain_id), http.StatusFound)
-		return
+			_ = addFlash(w, r, ctx.Store, flash)
+			http.Redirect(w, r, ctx.Reverse("mailbox-list", domain_id), http.StatusFound)
+			return
+		}
 	}
 	ctx.ExtendAndRender(w, "layout", "mailbox_form.html", &data)
 }
@@ -587,30 +593,34 @@ func aliasSave(w http.ResponseWriter, r *http.Request, ctx *core.Context) {
 	} else if r.Method != "POST" {
 		// not supported
 		return
-	} else if !form.Validate(r) {
-		// fallthrough
-	} else if source := form.GetString("source"); !strings.HasSuffix(source, "@"+domain.Name) {
-		form.SetError("source", "This source address doesn't end with @"+domain.Name)
 	} else {
-		alias.Source = source
-		alias.Destination = form.GetString("destination")
-		alias.Active = form.GetBool("active")
-
-		var flash string
-		if pkerr != nil {
-			err = alias.Create(ctx.Database)
-			flash = "Alias created successfully"
-		} else {
-			err = alias.Update(ctx.Database)
-			flash = "Alias updated successfully"
-		}
-		if err != nil {
-			panic(err)
+		valid := form.Validate(r)
+		if source := r.FormValue("source"); !strings.HasSuffix(source, "@"+domain.Name) {
+			valid = false
+			form.SetError("source", "The address doesn't end with @"+domain.Name)
 		}
 
-		_ = addFlash(w, r, ctx.Store, flash)
-		http.Redirect(w, r, ctx.Reverse("alias-list", domain_id), http.StatusFound)
-		return
+		if valid {
+			alias.Source = form.GetString("source")
+			alias.Destination = form.GetString("destination")
+			alias.Active = form.GetBool("active")
+
+			var flash string
+			if pkerr != nil {
+				err = alias.Create(ctx.Database)
+				flash = "Alias created successfully"
+			} else {
+				err = alias.Update(ctx.Database)
+				flash = "Alias updated successfully"
+			}
+			if err != nil {
+				panic(err)
+			}
+
+			_ = addFlash(w, r, ctx.Store, flash)
+			http.Redirect(w, r, ctx.Reverse("alias-list", domain_id), http.StatusFound)
+			return
+		}
 	}
 
 	ctx.ExtendAndRender(w, "layout", "alias_form.html", &data)
