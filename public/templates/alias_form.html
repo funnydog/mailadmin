@@ -8,10 +8,10 @@
 <form class="row" action="" method="post">
   {{ .csrfField }}
   <div class="col mb-3">
-    {{ template "emailfield" .form.Values.source }}
+    {{ template "emailfield" .form.Values.destination }}
   </div>
   <div class="mb-3">
-    {{ template "emailfield" .form.Values.destination }}
+    {{ template "emailfield" .form.Values.redirect_to }}
   </div>
   <div class="mb-3">
     <label class="form-label">Alias options</label>

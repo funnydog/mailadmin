@@ -10,8 +10,8 @@
   </caption>
   <thead>
     <tr>
-      <th>Source</th>
       <th>Destination</th>
+      <th>Redirect to</th>
       <th>Active</th>
       <th>Modified</th>
       <th></th>
@@ -22,11 +22,11 @@
     <tr{{ if not $alias.Active }} class="text-muted"{{ end }}>
       <td>
 	<a href="{{ reverse "alias-update" $alias.Domain.Value $alias.Id.Value }}">
-	  {{ $alias.Source }}
+	  {{ $alias.Destination }}
 	</a>
       </td>
       <td>
-	{{ $alias.Destination }}
+	{{ $alias.RedirectTo }}
       </td>
       <td>
 	{{ if $alias.Active }}<span data-feather="check-circle"></span>{{ end }}

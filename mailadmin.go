@@ -543,8 +543,8 @@ func aliasList(w http.ResponseWriter, r *http.Request, ctx *core.Context) {
 
 func createAliasForm() form.Form {
 	myForm := form.Create()
-	myForm.Add("source", &form.EmailField{Label: "Source", Required: true})
 	myForm.Add("destination", &form.EmailField{Label: "Destination", Required: true})
+	myForm.Add("redirect_to", &form.EmailField{Label: "Redirect to", Required: true})
 	myForm.Add("active", &form.CheckboxField{Label: "Active"})
 	return myForm
 }
@@ -587,22 +587,22 @@ func aliasSave(w http.ResponseWriter, r *http.Request, ctx *core.Context) {
 	}
 
 	if r.Method == "GET" {
-		form.SetString("source", alias.Source)
 		form.SetString("destination", alias.Destination)
+		form.SetString("redirect_to", alias.RedirectTo)
 		form.SetBool("active", alias.Active)
 	} else if r.Method != "POST" {
 		// not supported
 		return
 	} else {
 		valid := form.Validate(r)
-		if source := r.FormValue("source"); !strings.HasSuffix(source, "@"+domain.Name) {
+		if dest := r.FormValue("destination"); !strings.HasSuffix(dest, "@"+domain.Name) {
 			valid = false
-			form.SetError("source", "The address doesn't end with @"+domain.Name)
+			form.SetError("destination", "The address doesn't end with @"+domain.Name)
 		}
 
 		if valid {
-			alias.Source = form.GetString("source")
 			alias.Destination = form.GetString("destination")
+			alias.RedirectTo = form.GetString("redirect_to")
 			alias.Active = form.GetBool("active")
 
 			var flash string

@@ -256,8 +256,8 @@ func GetMailboxById(db *db.Database, PK int64) (Mailbox, error) {
 type Alias struct {
 	Id          sql.NullInt64
 	Domain      sql.NullInt64
-	Source      string
 	Destination string
+	RedirectTo  string
 	Created     time.Time
 	Modified    time.Time
 	Active      bool
@@ -274,8 +274,8 @@ func (alias *Alias) Create(db *db.Database) error {
 
 	res, err := stmt.Exec(
 		alias.Domain,
-		alias.Source,
 		alias.Destination,
+		alias.RedirectTo,
 		alias.Active,
 		alias.Created,
 		alias.Modified,
@@ -302,8 +302,8 @@ func (alias *Alias) Update(db *db.Database) error {
 
 	_, err = stmt.Exec(
 		alias.Domain,
-		alias.Source,
 		alias.Destination,
+		alias.RedirectTo,
 		alias.Active,
 		alias.Modified,
 		alias.Id,
@@ -340,8 +340,8 @@ func GetAliasList(db *db.Database, domain_id int64) ([]Alias, error) {
 		err := rows.Scan(
 			&t.Id,
 			&t.Domain,
-			&t.Source,
 			&t.Destination,
+			&t.RedirectTo,
 			&t.Active,
 			&t.Created,
 			&t.Modified,
@@ -366,8 +366,8 @@ func GetAliasById(db *db.Database, PK int64) (Alias, error) {
 	err = stmt.QueryRow(PK).Scan(
 		&t.Id,
 		&t.Domain,
-		&t.Source,
 		&t.Destination,
+		&t.RedirectTo,
 		&t.Active,
 		&t.Created,
 		&t.Modified,
@@ -392,10 +392,10 @@ func PrepareStatements(db *db.Database) error {
 		"mailboxDelete": `DELETE FROM mailbox WHERE id=$1`,
 
 		// aliases
-		"aliasList":   `SELECT id, domain_id, source, destination, active, created, modified FROM alias WHERE domain_id=$1 ORDER BY source, destination`,
-		"aliasFind":   `SELECT id, domain_id, source, destination, active, created, modified FROM alias WHERE id=$1`,
-		"aliasCreate": `INSERT INTO alias(domain_id, source, destination, active, created, modified) VALUES ($1, $2, $3, $4, $5, $6)`,
-		"aliasUpdate": `UPDATE alias SET domain_id=$1, source=$2, destination=$3, active=$4, modified=$5 WHERE id=$6`,
+		"aliasList":   `SELECT id, domain_id, destination, redirect_to, active, created, modified FROM alias WHERE domain_id=$1 ORDER BY destination, redirect_to`,
+		"aliasFind":   `SELECT id, domain_id, destination, redirect_to, active, created, modified FROM alias WHERE id=$1`,
+		"aliasCreate": `INSERT INTO alias(domain_id, destination, redirect_to, active, created, modified) VALUES ($1, $2, $3, $4, $5, $6)`,
+		"aliasUpdate": `UPDATE alias SET domain_id=$1, destination=$2, redirect_to=$3, active=$4, modified=$5 WHERE id=$6`,
 		"aliasDelete": `DELETE FROM alias WHERE id=$1`,
 	}
 
@@ -448,8 +448,8 @@ CREATE TABLE mailbox (
 CREATE TABLE alias (
 	id INTEGER PRIMARY KEY,
 	domain_id INTEGER NOT NULL,
-	source VARCHAR(100) NOT NULL,
 	destination VARCHAR(100) NOT NULL,
+	redirect_to VARCHAR(100) NOT NULL,
 	created DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
 	modified DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
 	active TINYINT(1) NOT NULL DEFAULT '1',
