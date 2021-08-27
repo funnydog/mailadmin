@@ -154,7 +154,11 @@ func (f *Form) GetDecimal(fieldName string) decimal.Decimal {
 func (f *Form) SetError(fieldname, err string) {
 	fieldValue, ok := f.Values[fieldname]
 	if ok {
-		fieldValue.Error = err
+		if fieldValue.Error != "" {
+			fieldValue.Error += " " + err
+		} else {
+			fieldValue.Error = err
+		}
 	}
 }
 
