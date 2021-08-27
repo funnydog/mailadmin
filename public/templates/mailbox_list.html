@@ -1,6 +1,6 @@
 {{ define "sidebar" }}{{ template "mailbox_sidebar" . }}{{ end }}
 {{ define "content" }}
-<h5>Mailboxes</h5>
+<h5>Mailboxes for {{ .domain.Name }}</h5>
 <table class="table table-hover table-condensed">
   <caption>
     Mailboxes
@@ -12,7 +12,7 @@
     <tr>
       <th>Email</th>
       <th>Active</th>
-      <th>Modified</th>
+      <th>Last Modified</th>
       <th></th>
     </tr>
   </thead>

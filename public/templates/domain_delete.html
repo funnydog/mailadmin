@@ -37,32 +37,32 @@
 </div>
 {{ end }}
 {{ define "content" }}
-<div class="card mb-3">
-  <h4 class="card-header">{{ .domain.Name }}</h4>
-  <div class="card-body">
-    <table class="table table-hover">
-      <tbody>
-	<tr>
-	  <th scope="row">Active</th>
-	  <td>{{ if .domain.Active }}Yes{{ else }}No{{ end }}</td>
-	</tr>
-	<tr>
-	  <th scope="row">Backup MX</th>
-	  <td>{{ if .domain.BackupMX }}Yes{{ else }}No{{ end }}</td>
-	</tr>
-	<tr>
-	  <th scope="row">Created on</th>
-	  <td>{{ .domain.Created.Format "2006-01-02 15:04 MST" }}</td>
-	</tr>
-	<tr>
-	  <th scope="row">Modified on</th>
-	  <td>{{ .domain.Modified.Format "2006-01-02 15:04 MST" }}</td>
-	</tr>
-      </tbody>
-    </table>
-  </div>
-</div>
-<h4 class="text-danger">Are you sure you want to delete the domain above?</h4>
+<h5>Delete {{ .domain.Name }}</h5>
+<table class="table table-hover">
+  <tbody>
+    <tr>
+      <th scope="row">Domain</th>
+      <td>{{ .domain.Name }}</td>
+    </tr>
+    <tr>
+      <th scope="row">Active</th>
+      <td>{{ if .domain.Active }}Yes{{ else }}No{{ end }}</td>
+    </tr>
+    <tr>
+      <th scope="row">Backup MX</th>
+      <td>{{ if .domain.BackupMX }}Yes{{ else }}No{{ end }}</td>
+    </tr>
+    <tr>
+      <th scope="row">Created on</th>
+      <td>{{ .domain.Created.Format "2006-01-02 15:04 MST" }}</td>
+    </tr>
+    <tr>
+      <th scope="row">Modified on</th>
+      <td>{{ .domain.Modified.Format "2006-01-02 15:04 MST" }}</td>
+    </tr>
+  </tbody>
+</table>
+<p class="text-danger fw-bold">Are you sure you want to delete this domain?</p>
 <form action="" method="post" class="form">
   {{ .csrfField }}
   <div class="mt-3">

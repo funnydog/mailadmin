@@ -36,48 +36,41 @@
 </div>
 {{ end }}
 {{ define "content" }}
-<div class="row">
-  <div class="col-sm">
-    <h5>Overview</h5>
-  </div>
-</div>
-<div class="card">
-  <h4 class="card-header">{{ .domain.Name }}</h4>
-  <div class="card-body">
-    <table class="table table-hover">
-      <tbody>
-	<tr>
-	  <th scope="row">Active</th>
-	  <td>{{ if .domain.Active }}Yes{{ else }}No{{ end }}</td>
-	</tr>
-	<tr>
-	  <th scope="row">Backup MX</th>
-	  <td>{{ if .domain.BackupMX }}Yes{{ else }}No{{ end }}</td>
-	</tr>
-	<tr>
-	  <th scope="row">Created on</th>
-	  <td>{{ .domain.Created.Format "2006-01-02 15:04 MST" }}</td>
-	</tr>
-	<tr>
-	  <th scope="row">Modified on</th>
-	  <td>{{ .domain.Modified.Format "2006-01-02 15:04 MST" }}</td>
-	</tr>
-      </tbody>
-    </table>
-  </div>
-  <div class="card-body">
-    <a class="card-link" href="{{ reverse "domain-update" .domain.Id.Value }}">
-      <span data-feather="edit-2"></span> Change
-    </a>
-    <a class="card-link" href="{{ reverse "mailbox-list" .domain.Id.Value }}">
-      <span data-feather="inbox"></span> Mailboxes
-    </a>
-    <a class="card-link" href="{{ reverse "alias-list" .domain.Id.Value }}">
-      <span data-feather="mail"></span> Aliases
-    </a>
-    <a class="card-link text-danger" href="{{ reverse "domain-delete" .domain.Id.Value }}">
-      <span data-feather="trash"></span> Delete
-    </a>
-  </div>
-</div>
+<h5>Overview</h5>
+<table class="table table-hover">
+  <tbody>
+    <tr>
+      <th scope="row">Domain</th>
+      <td>{{ .domain.Name }}</td>
+    </tr>
+    <tr>
+      <th scope="row">Active</th>
+      <td>{{ if .domain.Active }}Yes{{ else }}No{{ end }}</td>
+    </tr>
+    <tr>
+      <th scope="row">Backup MX</th>
+      <td>{{ if .domain.BackupMX }}Yes{{ else }}No{{ end }}</td>
+    </tr>
+    <tr>
+      <th scope="row">Created on</th>
+      <td>{{ .domain.Created.Format "2006-01-02 15:04 MST" }}</td>
+    </tr>
+    <tr>
+      <th scope="row">Modified on</th>
+      <td>{{ .domain.Modified.Format "2006-01-02 15:04 MST" }}</td>
+    </tr>
+  </tbody>
+</table>
+<a class="card-link" href="{{ reverse "domain-update" .domain.Id.Value }}">
+  <span data-feather="edit-2"></span> Change
+</a>
+<a class="card-link" href="{{ reverse "mailbox-list" .domain.Id.Value }}">
+  <span data-feather="inbox"></span> Mailboxes
+</a>
+<a class="card-link" href="{{ reverse "alias-list" .domain.Id.Value }}">
+  <span data-feather="mail"></span> Aliases
+</a>
+<a class="card-link text-danger" href="{{ reverse "domain-delete" .domain.Id.Value }}">
+  <span data-feather="trash"></span> Delete
+</a>
 {{ end }}

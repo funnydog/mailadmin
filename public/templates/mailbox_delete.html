@@ -11,9 +11,17 @@
       <th scope="row">Active</th>
       <td>{{ if .mailbox.Active }}Yes{{ else }}No{{ end }}</td>
     </tr>
+    <tr>
+      <th scope="row">Created on</th>
+      <td>{{ .mailbox.Created.Format "2006-01-02 15:04:05 MST" }}</td>
+    </tr>
+    <tr>
+      <th scope="row">Modified on</th>
+      <td>{{ .mailbox.Modified.Format "2006-01-02 15:04:05 MST" }}</td>
+    </tr>
   </tbody>
 </table>
-<p class="text-danger fw-bold">Are you sure you want to delete the mailbox above?</p>
+<p class="text-danger fw-bold">Are you sure you want to delete this mailbox?</p>
 <form action="" method="post" class="form">
   {{ .csrfField }}
   <div class="mt-3">

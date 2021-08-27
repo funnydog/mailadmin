@@ -1,6 +1,6 @@
 {{ define "sidebar" }}{{ template "alias_sidebar" . }}{{ end }}
 {{ define "content" }}
-<h5>Aliases</h5>
+<h5>Aliases for {{ .domain.Name }}</h5>
 <table class="table table-hover table-condensed">
   <caption>
     Aliases
@@ -13,7 +13,7 @@
       <th>Destination</th>
       <th>Redirect to</th>
       <th>Active</th>
-      <th>Modified</th>
+      <th>Last Modified</th>
       <th></th>
     </tr>
   </thead>
