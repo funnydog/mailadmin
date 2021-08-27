@@ -72,6 +72,15 @@ func Connect(conf *config.Configuration) (*Database, error) {
 	switch conf.DBType {
 	case "sqlite3":
 		db, err = sql.Open("sqlite3", conf.DBName)
+		if err != nil {
+			return nil, err
+		}
+
+		_, err = db.Exec("PRAGMA foreign_keys = ON;")
+		if err != nil {
+			return nil, err
+		}
+
 	case "postgres":
 		parameters := []string{}
 		if conf.DBUser != "" {
@@ -99,12 +108,12 @@ func Connect(conf *config.Configuration) (*Database, error) {
 		}
 
 		db, err = sql.Open("postgres", strings.Join(parameters, " "))
-	default:
-		err = ErrDbTypeNotSupported(conf.DBType)
-	}
+		if err != nil {
+			return nil, err
+		}
 
-	if err != nil {
-		return nil, err
+	default:
+		return nil, ErrDbTypeNotSupported(conf.DBType)
 	}
 
 	return &Database{
