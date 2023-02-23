@@ -120,8 +120,8 @@ func createTestingContext() *core.Context {
 
 	alias := types.Alias{
 		Domain:      domain.Id,
-		Source:      "postmaster@example.com",
-		Destination: "test@example.com",
+		Destination: "postmaster@example.com",
+		RedirectTo:  "test@example.com",
 		Active:      true,
 	}
 	err = alias.Create(ctx.Database)
@@ -445,12 +445,12 @@ func TestAliasCreate(t *testing.T) {
 	testGet(t, myURL, http.StatusOK)
 
 	data := url.Values{}
-	data.Add("source", "source@example.org")
-	data.Add("destination", "destination@otherdomain.com")
+	data.Add("destination", "original@example.org")
+	data.Add("redirect_to", "redirected@otherdomain.com")
 	data.Add("active", "on")
 	testPost(t, myURL, data.Encode(), http.StatusOK)
 
-	data.Set("source", "source@example.com")
+	data.Set("destination", "original@example.com")
 	testPost(t, myURL, data.Encode(), http.StatusFound)
 
 	alias, err := types.GetAliasById(ctx.Database, 2)
@@ -458,14 +458,14 @@ func TestAliasCreate(t *testing.T) {
 		t.Error(err)
 	}
 
-	if alias.Source != data.Get("source") {
-		t.Errorf("The alias source %s doesn't match the submitted source %s",
-			alias.Source, data.Get("source"))
-	}
-
 	if alias.Destination != data.Get("destination") {
 		t.Errorf("The alias destination %s doesn't match the submitted destination %s",
 			alias.Destination, data.Get("destination"))
+	}
+
+	if alias.RedirectTo != data.Get("redirect_to") {
+		t.Errorf("The alias redirect_to %s doesn't match the submitted redirect_to %s",
+			alias.RedirectTo, data.Get("redirect_to"))
 	}
 
 	if alias.Active != true {
@@ -485,12 +485,12 @@ func TestAliasUpdate(t *testing.T) {
 	testGet(t, myURL, http.StatusOK)
 
 	data := url.Values{}
-	data.Add("source", "source@example.org")
-	data.Add("destination", "destination@otherdomain.com")
+	data.Add("destination", "original@example.org")
+	data.Add("redirect_to", "redirected@otherdomain.com")
 	data.Add("active", "on")
 	testPost(t, myURL, data.Encode(), http.StatusOK)
 
-	data.Set("source", "source@example.com")
+	data.Set("destination", "original@example.com")
 	testPost(t, myURL, data.Encode(), http.StatusFound)
 
 	alias, err := types.GetAliasById(ctx.Database, 1)
@@ -498,14 +498,14 @@ func TestAliasUpdate(t *testing.T) {
 		t.Error(err)
 	}
 
-	if alias.Source != data.Get("source") {
-		t.Errorf("The alias source %s doesn't match the submitted source %s",
-			alias.Source, data.Get("source"))
-	}
-
 	if alias.Destination != data.Get("destination") {
 		t.Errorf("The alias destination %s doesn't match the submitted destination %s",
 			alias.Destination, data.Get("destination"))
+	}
+
+	if alias.RedirectTo != data.Get("redirect_to") {
+		t.Errorf("The alias redirect_to %s doesn't match the submitted redirect_to %s",
+			alias.RedirectTo, data.Get("redirect_to"))
 	}
 
 	if alias.Active != true {
