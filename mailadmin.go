@@ -4,9 +4,13 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"os"
 	"strconv"
 	"strings"
+	"syscall"
+
 	"golang.org/x/crypto/bcrypt"
+	"golang.org/x/term"
 
 	"github.com/funnydog/mailadmin/core"
 	"github.com/funnydog/mailadmin/core/form"
@@ -17,8 +21,9 @@ import (
 )
 
 var (
-	helpFlag   = getopt.Bool('h', "display help")
-	createFlag = getopt.Bool('m', "create a new model")
+	helpFlag     = getopt.Bool('h', "display help")
+	createFlag   = getopt.Bool('m', "create a new model")
+	passwordFlag = getopt.Bool('p', "change the sign-in password")
 )
 
 func getFlashes(w http.ResponseWriter, r *http.Request, s sessions.Store) []interface{} {
@@ -48,10 +53,7 @@ func addFlash(w http.ResponseWriter, r *http.Request, s sessions.Store, text str
 func main() {
 	getopt.Parse()
 	if *helpFlag {
-		fmt.Println("Usage: mailadmin <option>")
-		fmt.Println("Options:")
-		fmt.Println("\t-h\t display help")
-		fmt.Println("\t-m\t create the model")
+		getopt.PrintUsage(os.Stdout)
 		return
 	}
 
@@ -60,6 +62,28 @@ func main() {
 		log.Panic(err)
 	}
 	defer ctx.Close()
+
+	if *passwordFlag {
+		fmt.Print("Type the new password: ")
+		bytepwd, err := term.ReadPassword(int(syscall.Stdin))
+		if err != nil {
+			log.Panic(err)
+		}
+
+		hashpwd, err := bcrypt.GenerateFromPassword(bytepwd, bcrypt.DefaultCost)
+		if err != nil {
+			log.Panic(err)
+		}
+
+		ctx.Config.Password = string(hashpwd)
+		err = ctx.Config.Write("config.json")
+		if err != nil {
+			log.Panic(err)
+		}
+
+		fmt.Print("\nPassword changed\n")
+		return
+	}
 
 	if *createFlag {
 		fmt.Println("Creating the model")
