@@ -6,10 +6,10 @@ import (
 	"net/http"
 	"strconv"
 	"strings"
+	"golang.org/x/crypto/bcrypt"
 
 	"github.com/funnydog/mailadmin/core"
 	"github.com/funnydog/mailadmin/core/form"
-	"github.com/funnydog/mailadmin/core/sha512crypt"
 	"github.com/funnydog/mailadmin/types"
 	"github.com/gorilla/csrf"
 	"github.com/gorilla/sessions"
@@ -190,7 +190,7 @@ func signInHandler(w http.ResponseWriter, r *http.Request, ctx *core.Context) {
 		username := r.FormValue("username")
 		password := r.FormValue("password")
 
-		err := sha512crypt.CompareHashAndPassword([]byte(ctx.Config.Password), []byte(password))
+		err := bcrypt.CompareHashAndPassword([]byte(ctx.Config.Password), []byte(password))
 		if username == ctx.Config.Username && err == nil {
 			session, err := ctx.Store.Get(r, "session")
 			if err == nil {
@@ -401,6 +401,7 @@ func mailboxSave(w http.ResponseWriter, r *http.Request, ctx *core.Context) {
 	}
 
 	var title string
+	var oldpassword string
 	mailbox := types.Mailbox{}
 	pk, pkerr := strconv.ParseInt(parameters.ByName("pk"), 10, 64)
 	if pkerr != nil {
@@ -413,6 +414,7 @@ func mailboxSave(w http.ResponseWriter, r *http.Request, ctx *core.Context) {
 			panic(err)
 		}
 		title = "Change The Mailbox"
+		oldpassword = mailbox.Password
 	}
 
 	form := createMailboxForm()
@@ -447,13 +449,17 @@ func mailboxSave(w http.ResponseWriter, r *http.Request, ctx *core.Context) {
 			mailbox.Email = form.GetString("email")
 			mailbox.Active = form.GetBool("active")
 
-			// hash the password
-			password := form.GetString("password")
-			hash, err := sha512crypt.GenerateFromPassword([]byte(password))
-			if err != nil {
-				panic(err)
+			if password := form.GetString("password"); password != "" {
+				// hash the password
+				hash, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
+				if err != nil {
+					panic(err)
+				}
+				mailbox.Password = string(hash)
+			} else {
+				// use the old password
+				mailbox.Password = oldpassword
 			}
-			mailbox.Password = string(hash)
 
 			var flash string
 			if pkerr != nil {

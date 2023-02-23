@@ -11,9 +11,12 @@ require (
 	github.com/mattn/go-sqlite3 v1.14.8
 	github.com/oxtoacart/bpool v0.0.0-20190530202638-03653db5a59c
 	github.com/pborman/getopt/v2 v2.1.0
+	golang.org/x/crypto v0.6.0
+	golang.org/x/term v0.5.0
 )
 
 require (
 	github.com/gorilla/securecookie v1.1.1 // indirect
 	github.com/pkg/errors v0.9.1 // indirect
+	golang.org/x/sys v0.5.0 // indirect
 )

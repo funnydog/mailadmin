@@ -9,15 +9,20 @@ import (
 	"strings"
 	"testing"
 
+	"golang.org/x/crypto/bcrypt"
+
 	"github.com/funnydog/mailadmin/core"
 	"github.com/funnydog/mailadmin/core/config"
-	"github.com/funnydog/mailadmin/core/sha512crypt"
 	"github.com/funnydog/mailadmin/types"
 	"github.com/gorilla/csrf"
 )
 
 // path to the sqlite3 database
-const databasePath = "/tmp/testing.db"
+const (
+	databasePath  = "/tmp/testing.db"
+	dummyUsername = "admin"
+	dummyPassword = "pass"
+)
 
 var testingClient = http.Client{
 	CheckRedirect: func(*http.Request, []*http.Request) error {
@@ -74,6 +79,14 @@ func createTestingContext() *core.Context {
 	if err != nil {
 		panic(err)
 	}
+
+	// update the password with a dummy one
+	password, err := bcrypt.GenerateFromPassword([]byte(dummyPassword), bcrypt.DefaultCost)
+	if err != nil {
+		panic(err)
+	}
+	ctx.Config.Password = string(password)
+
 	configureContext(ctx)
 
 	// skip the CSRF token check
@@ -110,7 +123,7 @@ func createTestingContext() *core.Context {
 	mailbox := types.Mailbox{
 		Domain:   domain.Id,
 		Email:    "test@example.com",
-		Password: "$6$blah$blah",
+		Password: "$2y$05$wkmccwcQT8JHTSY5mZErKedBBUrJmW39gTk2Toi7qPIF6.dc6prli",
 		Active:   true,
 	}
 	err = mailbox.Create(ctx.Database)
@@ -164,8 +177,8 @@ func TestSignInHandler(t *testing.T) {
 
 	// successful sign in post
 	data := url.Values{}
-	data.Set("username", "admin")
-	data.Set("password", "pass")
+	data.Set("username", dummyUsername)
+	data.Set("password", dummyPassword)
 	testPost(t, myURL, data.Encode(), http.StatusFound)
 }
 
@@ -323,7 +336,7 @@ func TestMailboxCreate(t *testing.T) {
 
 	data := url.Values{}
 	data.Add("email", "notvalidemail")
-	data.Add("password", "pass")
+	data.Add("password", dummyPassword)
 	data.Add("active", "on")
 	testPost(t, myURL, data.Encode(), http.StatusOK)
 
@@ -340,7 +353,7 @@ func TestMailboxCreate(t *testing.T) {
 			mailbox.Email, data.Get("email"))
 	}
 
-	err = sha512crypt.CompareHashAndPassword(
+	err = bcrypt.CompareHashAndPassword(
 		[]byte(mailbox.Password),
 		[]byte(data.Get("password")),
 	)
@@ -404,7 +417,7 @@ func TestMailboxUpdate(t *testing.T) {
 		t.Error("Mailbox not found")
 	}
 
-	err = sha512crypt.CompareHashAndPassword(
+	err = bcrypt.CompareHashAndPassword(
 		[]byte(mailbox.Password),
 		[]byte(data.Get("password")),
 	)
