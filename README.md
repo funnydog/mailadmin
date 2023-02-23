@@ -3,32 +3,34 @@
 MailAdmin is a simple web application written in golang for managing
 the virtual domains for a mail server.
 
+The data is stored in a sqlite database which is then used by dovecot
+and postfix to get the appropriate data.
+
+The application stores the passwords hashed with the bcrypt algorithm
+with a cost of 10.
+
 ## Motivation
 
-Easen the management of my mail server.
+This application was created to ease the management of my personal
+mail server.
 
 ## Quick start
 
 1. Get the necessary dependencies:
 
    ```
-   $ go get -u github.com/go-errors/errors
-   $ go get -u github.com/gorilla/csrf
-   $ go get -u github.com/gorilla/sessions
-   $ go get -u github.com/julienschmidt/httprouter
-   $ go get -u github.com/lib/pq
-   $ go get -u github.com/mattn/go-sqlite3
-   $ go get -u github.com/pborman/getopt/v2
+   $ go mod tidy
    ```
 
-2. Create the sqlite3 database by invoking the application with the -m
+2. Change the config.json file appropriately. The password is the
+   bcrypt hash of the actual password for signing in. To change it
+   just invoke the application from the command line with the
+   following command: ```go run mailadmin.go -p```. You can reuse the
+   current hash which matches the password ```pass```.
+
+3. Create the sqlite3 database by invoking the application with the -m
    flag: ```go run mailadmin.go -m``` The database will be named as
    the dbname field in config.json.
-
-3. Edit config.json to change the password for signing in the web
-   application. You can use for example ```doveadm pw -s
-   SHA512-CRYPT``` to generate a new hash. You can reuse the current
-   hash which matches the password ```pass```.
 
 4. Run the application: ```go run mailadmin.go``` and connect to
    localhost:8080 to sign-in. The default username is ```admin``` and
