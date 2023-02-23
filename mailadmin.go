@@ -426,7 +426,6 @@ func mailboxSave(w http.ResponseWriter, r *http.Request, ctx *core.Context) {
 	}
 
 	var title string
-	var oldpassword string
 	mailbox := types.Mailbox{}
 	pk, pkerr := strconv.ParseInt(parameters.ByName("pk"), 10, 64)
 	if pkerr != nil {
@@ -439,7 +438,6 @@ func mailboxSave(w http.ResponseWriter, r *http.Request, ctx *core.Context) {
 			panic(err)
 		}
 		title = "Change The Mailbox"
-		oldpassword = mailbox.Password
 	}
 
 	form := createMailboxForm()
@@ -481,9 +479,6 @@ func mailboxSave(w http.ResponseWriter, r *http.Request, ctx *core.Context) {
 					panic(err)
 				}
 				mailbox.Password = string(hash)
-			} else {
-				// use the old password
-				mailbox.Password = oldpassword
 			}
 
 			var flash string
