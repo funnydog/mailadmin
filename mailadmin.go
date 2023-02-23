@@ -24,6 +24,7 @@ var (
 	helpFlag     = getopt.Bool('h', "display help")
 	createFlag   = getopt.Bool('m', "create a new model")
 	passwordFlag = getopt.Bool('p', "change the sign-in password")
+	configPath   = getopt.String('f', "config.json", "path to the configuration")
 )
 
 func getFlashes(w http.ResponseWriter, r *http.Request, s sessions.Store) []interface{} {
@@ -57,7 +58,7 @@ func main() {
 		return
 	}
 
-	ctx, err := core.CreateContextFromPath("config.json")
+	ctx, err := core.CreateContextFromPath(*configPath)
 	if err != nil {
 		log.Panic(err)
 	}
