@@ -45,3 +45,11 @@ func Read(filename string) (Configuration, error) {
 
 	return config, nil
 }
+
+func (config *Configuration) Write(filename string) error {
+	data, err := json.MarshalIndent(config, "", "    ")
+	if err != nil {
+		return err
+	}
+	return os.WriteFile(filename, data, 0600)
+}
