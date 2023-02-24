@@ -252,8 +252,10 @@ func domainList(w http.ResponseWriter, r *http.Request, ctx *core.Context) {
 	}
 
 	ctx.ExtendAndRender(w, "layout", "domain_list.html", &map[string]interface{}{
-		"domains": domains,
-		"flashes": getFlashes(w, r, ctx.Store),
+		"Title":       "Managed Domains",
+		"DomainCount": len(domains),
+		"domains":     domains,
+		"flashes":     getFlashes(w, r, ctx.Store),
 	})
 }
 
@@ -271,8 +273,10 @@ func domainOverview(w http.ResponseWriter, r *http.Request, ctx *core.Context) {
 	}
 
 	data := map[string]interface{}{
-		"domain":  domain,
-		"flashes": getFlashes(w, r, ctx.Store),
+		"Title":    "Domain Overview",
+		"overview": true,
+		"domain":   domain,
+		"flashes":  getFlashes(w, r, ctx.Store),
 	}
 
 	ctx.ExtendAndRender(w, "layout", "domain_overview.html", &data)
@@ -309,6 +313,7 @@ func domainSave(w http.ResponseWriter, r *http.Request, ctx *core.Context) {
 	data := map[string]interface{}{
 		"PK":             pk,
 		"Title":          title,
+		"update":         true,
 		"form":           form,
 		"domain":         domain,
 		csrf.TemplateTag: csrf.TemplateField(r),
@@ -364,6 +369,8 @@ func domainDelete(w http.ResponseWriter, r *http.Request, ctx *core.Context) {
 
 	if r.Method == "GET" {
 		data := map[string]interface{}{
+			"Title":          "Delete the Domain",
+			"delete":         true,
 			"domain":         domain,
 			csrf.TemplateTag: csrf.TemplateField(r),
 		}
@@ -398,9 +405,11 @@ func mailboxList(w http.ResponseWriter, r *http.Request, ctx *core.Context) {
 	}
 
 	ctx.ExtendAndRender(w, "layout", "mailbox_list.html", &map[string]interface{}{
-		"mailboxes": mailboxes,
-		"domain":    domain,
-		"flashes":   getFlashes(w, r, ctx.Store),
+		"Title":        "Managed Mailboxes",
+		"MailboxCount": len(mailboxes),
+		"mailboxes":    mailboxes,
+		"domain":       domain,
+		"flashes":      getFlashes(w, r, ctx.Store),
 	})
 }
 
@@ -526,6 +535,7 @@ func mailboxDelete(w http.ResponseWriter, r *http.Request, ctx *core.Context) {
 		}
 
 		data := map[string]interface{}{
+			"Title":          "Delete the Mailbox",
 			"domain":         domain,
 			"mailbox":        mailbox,
 			csrf.TemplateTag: csrf.TemplateField(r),
@@ -561,9 +571,11 @@ func aliasList(w http.ResponseWriter, r *http.Request, ctx *core.Context) {
 	}
 
 	ctx.ExtendAndRender(w, "layout", "alias_list.html", &map[string]interface{}{
-		"aliases": aliases,
-		"domain":  domain,
-		"flashes": getFlashes(w, r, ctx.Store),
+		"Title":      "Managed Aliases",
+		"AliasCount": len(aliases),
+		"aliases":    aliases,
+		"domain":     domain,
+		"flashes":    getFlashes(w, r, ctx.Store),
 	})
 }
 
@@ -677,6 +689,7 @@ func aliasDelete(w http.ResponseWriter, r *http.Request, ctx *core.Context) {
 		}
 
 		data := map[string]interface{}{
+			"Title":          "Delete the Alias",
 			"domain":         domain,
 			"alias":          alias,
 			csrf.TemplateTag: csrf.TemplateField(r),

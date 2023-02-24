@@ -3,9 +3,9 @@
 <h5>Mailboxes for {{ .domain.Name }}</h5>
 <table class="table table-hover table-condensed">
   <caption>
-    Mailboxes
+    No. {{ .MailboxCount }} Managed Mailboxes
     <a class="float-end btn btn-sm btn-outline-primary" href="{{ reverse "mailbox-create" .domain.Id.Value }}">
-      New Mailbox
+      <span data-feather="plus-square"></span> New Mailbox
     </a>
   </caption>
   <thead>
@@ -25,14 +25,17 @@
 	</a>
       </td>
       <td>
-	{{ if $mailbox.Active }}<span data-feather="check-circle"></span>{{ end }}
+	{{ if $mailbox.Active }}
+	<span data-feather="check-circle"></span>
+	<span class="visually-hidden">Active</span>
+	{{ end }}
       </td>
       <td>
 	{{ $mailbox.Modified.Format "2006-01-02 15:04:05 MST" }}
       </td>
       <td>
 	<a class="text-danger" href="{{ reverse "mailbox-delete" $mailbox.Domain.Value $mailbox.Id.Value }}">
-	  <span data-feather="trash"></span>
+	  <span data-feather="trash-2"></span>
 	  <span class="visually-hidden">Delete</span>
       </td>
     </tr>

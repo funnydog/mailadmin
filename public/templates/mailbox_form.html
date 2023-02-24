@@ -17,13 +17,6 @@
     <label class="form-label">Mailbox options</label>
     {{ template "checkboxfield" .form.Values.active }}
   </div>
-  <div class="mt-3">
-    <button class="btn btn-default btn-primary" type="submit">
-      <span data-feather="save"></span> Confirm
-    </button>
-    <button class="btn btn-secondary" type="reset">
-      <span data-feather="refresh-cw"></span> Revert
-    </button>
-  </div>
+  {{ template "form_buttons" . }}
 </form>
 {{ end }}

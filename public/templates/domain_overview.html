@@ -1,43 +1,7 @@
-{{ define "sidebar" }}
-<div class="sidebar-sticky">
-  <ul class="nav nav-tabs nav-tabs-vertical nav-tabs-left flex-column">
-    <li class="nav-item">
-      <a class="nav-link" href="{{ reverse "domain-list" }}">
-	<span data-feather="arrow-up-left"></span> Home
-      </a>
-    </li>
-    <li class="nav-item">
-      <a class="nav-link active" href="{{ reverse "domain-overview" .domain.Id.Value }}">
-	<span data-feather="archive"></span> Overview
-	<span class="visually-hidden">(current)</span>
-      </a>
-    </li>
-    <li class="nav-item">
-      <a class="nav-link" href="{{ reverse "domain-update" .domain.Id.Value }}">
-	<span data-feather="edit-2"></span> Change
-      </a>
-    </li>
-    <li class="nav-item">
-      <a class="nav-link" href="{{ reverse "mailbox-list" .domain.Id.Value }}">
-	<span data-feather="inbox"></span> Mailboxes
-      </a>
-    </li>
-    <li class="nav-item">
-      <a class="nav-link" href="{{ reverse "alias-list" .domain.Id.Value }}">
-	<span data-feather="mail"></span> Aliases
-      </a>
-    </li>
-    <li class="nav-item">
-      <a class="nav-link" href="{{ reverse "domain-delete" .domain.Id.Value }}">
-	 <span data-feather="trash"></span> Delete
-      </a>
-    </li>
-  </ul>
-</div>
-{{ end }}
+{{ define "sidebar" }}{{ template "domain_sidebar" . }}{{ end }}
 {{ define "content" }}
 <h5>Overview</h5>
-<table class="table table-hover">
+<table class="table">
   <tbody>
     <tr>
       <th scope="row">Domain</th>
@@ -61,16 +25,26 @@
     </tr>
   </tbody>
 </table>
-<a class="card-link" href="{{ reverse "domain-update" .domain.Id.Value }}">
-  <span data-feather="edit-2"></span> Change
-</a>
-<a class="card-link" href="{{ reverse "mailbox-list" .domain.Id.Value }}">
-  <span data-feather="inbox"></span> Mailboxes
-</a>
-<a class="card-link" href="{{ reverse "alias-list" .domain.Id.Value }}">
-  <span data-feather="mail"></span> Aliases
-</a>
-<a class="card-link text-danger" href="{{ reverse "domain-delete" .domain.Id.Value }}">
-  <span data-feather="trash"></span> Delete
-</a>
+<ul class="list-inline">
+  <li class="list-inline-item">
+    <a class="card-link" href="{{ reverse "domain-update" .domain.Id.Value }}">
+      <span data-feather="edit-2"></span> Change
+    </a>
+  </li>
+  <li class="list-inline-item">
+    <a class="card-link" href="{{ reverse "mailbox-list" .domain.Id.Value }}">
+      <span data-feather="inbox"></span> Mailboxes
+    </a>
+  </li>
+  <li class="list-inline-item">
+    <a class="card-link" href="{{ reverse "alias-list" .domain.Id.Value }}">
+      <span data-feather="mail"></span> Aliases
+    </a>
+  </li>
+  <li class="list-inline-item">
+    <a class="card-link text-danger" href="{{ reverse "domain-delete" .domain.Id.Value }}">
+      <span data-feather="trash"></span> Delete
+    </a>
+  </li>
+</ul>
 {{ end }}

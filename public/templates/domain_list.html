@@ -1,10 +1,11 @@
+{{ define "sidebar" }}{{ end }}
 {{ define "content" }}
-<h5>Managed Domains</h5>
-<table class="table table-hover table-condensed">
+<h5>{{ .Title }}</h5>
+<table class="table table-hover">
   <caption>
-    Managed Domains
+    No. {{ .DomainCount }} Managed Domains
     <a class="float-end btn btn-sm btn-outline-primary" href="{{ reverse "domain-create" }}">
-      New Domain
+      <span data-feather="plus-square"></span> New Domain
     </a>
   </caption>
   <thead>
@@ -16,7 +17,7 @@
       <th></th>
     </tr>
   </thead>
-  <tbody>
+  <tbody class="table-group-divider">
     {{ range $_, $domain := .domains }}
     <tr{{ if not $domain.Active}} class="text-muted"{{ end }}>
       <td>
@@ -25,17 +26,23 @@
 	</a>
       </td>
       <td>
-	{{ if $domain.Active }}<span data-feather="check-circle"></span>{{ end }}
+	{{ if $domain.Active }}
+	<span data-feather="check-circle"></span>
+	<span class="visually-hidden">Active</span>
+	{{ end }}
       </td>
       <td>
-	{{ if $domain.BackupMX }}<span data-feather="check-circle"></span>{{ end }}
+	{{ if $domain.BackupMX }}
+	<span data-feather="check-circle"></span>
+	<span class="visually-hidden">BackupMX</span>
+	{{ end }}
       </td>
       <td>
 	{{ $domain.Modified.Format "2006-01-02 15:04:05 MST" }}
       </td>
       <td>
 	<a class="text-danger" href="{{ reverse "domain-delete" $domain.Id.Value }}">
-	  <span data-feather="trash"></span>
+	  <span data-feather="trash-2"></span>
 	  <span class="visually-hidden">Delete</span>
       </td>
     </tr>
