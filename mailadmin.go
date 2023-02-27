@@ -322,7 +322,6 @@ func domainSave(w http.ResponseWriter, r *http.Request, ctx *core.Context) {
 
 	form := domainForm()
 	data := map[string]interface{}{
-		"PK":             pk,
 		"Title":          title,
 		"update":         true,
 		"form":           form,
@@ -462,7 +461,6 @@ func mailboxSave(w http.ResponseWriter, r *http.Request, ctx *core.Context) {
 
 	form := createMailboxForm()
 	data := map[string]interface{}{
-		"PK":             pk,
 		"form":           form,
 		"domain":         domain,
 		"Title":          title,
@@ -628,7 +626,6 @@ func aliasSave(w http.ResponseWriter, r *http.Request, ctx *core.Context) {
 
 	form := createAliasForm()
 	data := map[string]interface{}{
-		"PK":             pk,
 		"form":           form,
 		"domain":         domain,
 		"Title":          title,
