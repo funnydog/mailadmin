@@ -67,15 +67,21 @@ func testPost(t *testing.T, url, data string, status int) {
 }
 
 func createTestingContext() *core.Context {
+	staticConf := config.Static{
+		StaticDir:   "public/static",
+		TemplateDir: "public/templates",
+		TagsDir:     "public/tags",
+		ExtendDir:   "public/extend",
+	}
+
 	conf, err := config.Read("config.json")
 	if err != nil {
 		panic(err)
 	}
-
 	conf.DBType = "sqlite3"
 	conf.DBName = databasePath
 
-	ctx, err := core.CreateContextFromConf(&conf)
+	ctx, err := core.CreateContextFromConf(resFS, staticConf, &conf)
 	if err != nil {
 		panic(err)
 	}
