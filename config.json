@@ -7,18 +7,16 @@
     "serverkey": "",
     "dbtype": "sqlite3",
     "dbuser": "",
+    "dbpass": "",
     "dbname": "postfix.db",
     "dbhost": "",
     "dbport": "",
     "dbsslmode": "",
     "baseprefix": "/mailadmin",
     "staticprefix": "/mailadmin/static",
-    "staticdir": "./public/static/",
-    "templatedir": "./public/templates/",
-    "tagsdir": "./public/tags/",
-    "extenddir": "./public/extend/",
+    "cookiekey": "something-very-secret",
+    "debug": true,
     "allowed_urls": [
-	"/mailadmin/static/bootstrap.min.css"
-    ],
-    "debug": true
+        "/mailadmin/static/bootstrap.min.css"
+    ]
 }

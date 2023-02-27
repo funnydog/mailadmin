@@ -5,6 +5,13 @@ import (
 	"os"
 )
 
+type Static struct {
+	StaticDir   string
+	TemplateDir string
+	TagsDir     string
+	ExtendDir   string
+}
+
 type Configuration struct {
 	Username     string   `json:"username"`
 	Password     string   `json:"password"`
@@ -21,10 +28,6 @@ type Configuration struct {
 	DBSSLMode    string   `json:"dbsslmode"`
 	BasePrefix   string   `json:"baseprefix"`
 	StaticPrefix string   `json:"staticprefix"`
-	StaticDir    string   `json:"staticdir"`
-	TemplateDir  string   `json:"templatedir"`
-	TagsDir      string   `json:"tagsdir"`
-	ExtendDir    string   `json:"extenddir"`
 	CookieKey    string   `json:"cookiekey"`
 	Debug        bool     `json:"debug"`
 	AllowedURLs  []string `json:"allowed_urls"`

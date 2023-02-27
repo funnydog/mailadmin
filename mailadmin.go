@@ -1,6 +1,7 @@
 package main
 
 import (
+	"embed"
 	"fmt"
 	"log"
 	"net/http"
@@ -13,6 +14,7 @@ import (
 	"golang.org/x/term"
 
 	"github.com/funnydog/mailadmin/core"
+	"github.com/funnydog/mailadmin/core/config"
 	"github.com/funnydog/mailadmin/core/form"
 	"github.com/funnydog/mailadmin/types"
 	"github.com/gorilla/csrf"
@@ -21,6 +23,8 @@ import (
 )
 
 var (
+	//go:embed public
+	resFS        embed.FS
 	helpFlag     = getopt.Bool('h', "display help")
 	createFlag   = getopt.Bool('m', "create a new model")
 	passwordFlag = getopt.Bool('p', "change the sign-in password")
@@ -58,7 +62,14 @@ func main() {
 		return
 	}
 
-	ctx, err := core.CreateContextFromPath(*configPath)
+	staticConf := config.Static{
+		StaticDir:   "public/static",
+		TemplateDir: "public/templates",
+		TagsDir:     "public/tags",
+		ExtendDir:   "public/extend",
+	}
+
+	ctx, err := core.CreateContextFromPath(resFS, staticConf, *configPath)
 	if err != nil {
 		log.Panic(err)
 	}

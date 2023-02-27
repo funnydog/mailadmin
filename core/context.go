@@ -1,6 +1,7 @@
 package core
 
 import (
+	"io/fs"
 	"log"
 	"net/http"
 
@@ -151,7 +152,7 @@ func (c *Context) AddMiddleware(mid Middleware) {
 	c.Middleware = append(c.Middleware, mid)
 }
 
-func CreateContextFromConf(conf *config.Configuration) (*Context, error) {
+func CreateContextFromConf(fsys fs.FS, static config.Static, conf *config.Configuration) (*Context, error) {
 	db, err := db.Connect(conf)
 	if err != nil {
 		return nil, err
@@ -172,15 +173,20 @@ func CreateContextFromConf(conf *config.Configuration) (*Context, error) {
 
 	// if StaticDir is empty don't set up the server for static
 	// files.
-	if conf.StaticDir != "" {
+	if static.StaticDir != "" {
+		subfs, err := fs.Sub(fsys, static.StaticDir)
+		if err != nil {
+			return nil, err
+		}
+
 		router.ServeFiles(
 			conf.StaticPrefix+"/*filepath",
-			http.Dir(conf.StaticDir),
+			http.FS(subfs),
 		)
 	}
 	urlManager := urls.CreateManager(conf, router)
 
-	templates, err := template.Create(conf, &urlManager)
+	templates, err := template.Create(fsys, static, &urlManager)
 	if err != nil {
 		db.Close()
 		return nil, err
@@ -201,11 +207,11 @@ func CreateContextFromConf(conf *config.Configuration) (*Context, error) {
 	}, nil
 }
 
-func CreateContextFromPath(configFile string) (*Context, error) {
+func CreateContextFromPath(fsys fs.FS, static config.Static, configFile string) (*Context, error) {
 	conf, err := config.Read(configFile)
 	if err != nil {
 		return nil, err
 	}
 
-	return CreateContextFromConf(&conf)
+	return CreateContextFromConf(fsys, static, &conf)
 }
