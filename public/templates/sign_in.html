@@ -2,49 +2,114 @@
 <html lang="en">
   <head>
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width,  initial-scale=1, shrink-to-fit=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <title>Sign In MailAdmin</title>
-    <link rel="stylesheet" href="{{ static "bootstrap.min.css" }}">
-    <style type="text/css">
-      html, body { height: 100%; }
-      body {
-	  display: flex;
-	  justify-content: center;
-	  align-items: center;
-	  padding-top: 40px;
-	  padding-bottom: 40px;
+    <style>
+      * {
+          box-sizing: border-box;
       }
-      .form-sign-in {
-	  width: 100%;
-	  max-width: 20rem;
+      html {
+          font-family: sans-serif;
       }
-
-      .form-sign-in h1 {
-	  font-weight: bold;
+      button,
+      input {
+          font-family: inherit;
+          font-size: 100%;
+      }
+      form {
+          max-width: 21rem;
+          margin: 0 auto;
+      }
+      header {
+          text-align: center;
+      }
+      h1 {
+          padding: 0;
+      }
+      h2 {
+          padding: 0;
+          color: grey;
+      }
+      form > div {
+          position: relative;
+          margin: 1rem 0;
+      }
+      div.button {
+          margin-top: 2rem;
+      }
+      div.error {
+          text-align: center;
+          color: #dc3545;
+      }
+      button,
+      input,
+      label {
+          display: block;
+          width: 100%;
+      }
+      input {
+          appearance:none;
+          height: calc(3.5rem + 2px);
+          padding: 1.625rem .75rem .625rem .75rem;
+          border: 1px solid #ced4da;
+          border-radius: .375rem;
+      }
+      input::placeholder {
+          color: transparent;
+      }
+      input:focus {
+          outline: 0;
+          box-shadow: 0 0 0 .25rem rgba(13, 110, 253, .25);
+      }
+      label {
+          position: absolute;
+          top: 0;
+          left: 0;
+          height: calc(3.5rem + 2px);
+          padding: 1.25rem .75rem;
+          text-align: start;
+          text-overflow: ellipsis;
+          white-space: nowrap;
+          pointer-events: none;
+          border: 1px solid transparent;
+          color: black;
+          transform-origin: 0 0;
+          transition: all 0.15s ease-in-out;
+      }
+      input:focus ~ label,
+      input:not(:placeholder-shown) + label {
+          opacity: .65;
+          transform: scale(.85) translateY(-.5rem) translateX(.15rem);
+      }
+      button {
+          line-height: 1.5;
+          color: white;
+          background-color: #0d6efd;
+          border: 1px solid #0d6efd;
+          border-radius: .375rem;
+          padding: .5rem;
       }
     </style>
   </head>
-  <body class="text-center">
-    <div class="form-sign-in">
-      <h1>MailAdmin</h1>
-      <h2 class="text-muted">Please sign in</h2>
+  <body>
+    <form action="" method="post">
+      <header>
+        <h1>MailAdmin</h1>
+        <h2>Please sign in</h2>
+      </header>
+      {{ .csrfField }}
       <div>
-	<form method="post" action="">
-	  {{ .csrfField }}
-	  <div class="form-floating mb-3">
-	    <input class="form-control" type="text" name="username" id="username" placeholder="Username" required autofocus>
-	    <label for="username">Username</label>
-	  </div>
-	  <div class="form-floating mb-3">
-	    <input class="form-control" type="password" name="password" id="password" placeholder="Password" required>
-	    <label for="password">Password</label>
-	  </div>
-	  <div class="d-grid gap-2">
-	    <button class="btn btn-primary" type="submit">Sign in</button>
-	  </div>
-	  {{ if .Error }}<div class="text-danger mt-3">{{ .Error }}</div>{{ end }}
-	</form>
+        <input type="text" name="username" id="username" placeholder="Username" required autofocus />
+        <label for="username">Username</label>
       </div>
-    </div>
+      <div>
+        <input type="password" name="password" id="password" placeholder="Password" required />
+        <label for="password">Password</label>
+      </div>
+      <div class="button">
+        <button type="submit">Sign in</button>
+      </div>
+      {{ if .Error }}<div class="error">{{ .Error }}</div>{{ end }}
+    </form>
   </body>
 </html>
