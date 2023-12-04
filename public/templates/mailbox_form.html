@@ -1,22 +1,32 @@
-{{ define "sidebar" }}{{ template "mailbox_sidebar" . }}{{ end }}
 {{ define "content" }}
-<div class="row">
-  <div class="col-sm">
-    <h5>{{ .Title }}</h5>
-  </div>
-</div>
-<form action="" method="post">
-  {{ .csrfField }}
-  <div class="mb-3">
-    {{ template "emailfield" .form.Values.email }}
-  </div>
-  <div class="mb-3">
-    {{ template "passfield" .form.Values.password }}
-  </div>
-  <div class="mb-3">
-    <label class="form-label">Mailbox options</label>
-    {{ template "checkboxfield" .form.Values.active }}
-  </div>
-  {{ template "form_buttons" . }}
-</form>
+<section>
+  <h2>{{ .Title }}</h2>
+  <form action="" method="post">
+    {{ .csrfField }}{{ with .form.Values }}
+    <ul>
+      <li>
+        <label for="email">E-Mail</label>
+        <input type="email" name="email" id="email" value="{{ .email.Value }}" required autofocus />
+        <span></span>
+      </li>
+      <li>
+        <label for="pwd">Password</label>
+        <input type="password" name="password" id="pwd" {{ if .password.Required }} required{{ end }}/>
+        <span></span>
+      </li>
+      <li>
+        <fieldset>
+          <legend>Options</legend>
+          <div>
+            <input type="checkbox" name="active" id="active" {{ if .active.Value }}checked{{ end }}/>
+            <label for="active">Active</label>
+          </div>
+        </fieldset>
+      </li>
+      <li>
+        <button type="submit">Confirm</button>
+      </li>
+    </ul>{{ end }}
+  </form>
+</section>
 {{ end }}

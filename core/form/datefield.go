@@ -13,25 +13,21 @@ type DateField struct {
 }
 
 func (f *DateField) Clean(value string) (interface{}, error) {
-	if value == "" {
-		if f.Required {
-			return nil, ErrRequired
+	if value != "" {
+		var err error
+		var date time.Time
+		for _, format := range date_formats {
+			date, err = time.Parse(format, value)
+			if err == nil {
+				break
+			}
 		}
-
+		return date, err
+	} else if f.Required {
+		return nil, ErrRequired
+	} else {
 		return nil, nil
 	}
-
-	var (
-		err  error
-		date time.Time
-	)
-	for _, format := range date_formats {
-		date, err = time.Parse(format, value)
-		if err == nil {
-			break
-		}
-	}
-	return date, err
 }
 
 func (f *DateField) Update(name string, value interface{}, fv *FieldValue) {

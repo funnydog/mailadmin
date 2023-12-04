@@ -16,19 +16,17 @@ type EmailField struct {
 }
 
 func (f *EmailField) Clean(value string) (interface{}, error) {
-	if value == "" {
-		if f.Required {
-			return nil, ErrRequired
+	if value != "" {
+		_, err := emailParser.Parse(value)
+		if err != nil {
+			return nil, ErrInvalidEmail
 		}
+		return value, nil
+	} else if f.Required {
+		return nil, ErrRequired
+	} else {
 		return nil, nil
 	}
-
-	_, err := emailParser.Parse(value)
-	if err != nil {
-		return nil, ErrInvalidEmail
-	}
-
-	return value, nil
 }
 
 func (f *EmailField) Update(name string, value interface{}, fv *FieldValue) {

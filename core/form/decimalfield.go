@@ -9,20 +9,13 @@ type DecimalField struct {
 }
 
 func (f *DecimalField) Clean(value string) (interface{}, error) {
-	if value == "" {
-		if f.Required {
-			return nil, ErrRequired
-		}
+	if value != "" {
+		return decimal.Parse(value)
+	} else if f.Required {
+		return nil, ErrRequired
+	} else {
 		return nil, nil
 	}
-
-	d, err := decimal.Parse(value)
-	if err != nil {
-		return nil, err
-	}
-
-	return d, nil
-
 }
 
 func (f *DecimalField) Update(name string, value interface{}, fv *FieldValue) {

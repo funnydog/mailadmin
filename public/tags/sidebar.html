@@ -1,0 +1,30 @@
+{{ define "sidebar" }}
+<ul>
+  <li{{ if .domaintab }} class="active" aria-current="page"{{ end }}>
+    <a href="{{ reverse "domain-list" }}">Domain list</a>
+  </li>{{ if .domain.Id.Value }}
+  <li{{ if .overviewtab }} class="active" aria-current="page"{{ end }}>
+    <a href="{{ reverse "domain-overview" .domain.Id.Value }}">Overview</a>
+  </li>
+  <li{{ if .updatetab }} class="active" aria-current="page"{{ end }}>
+    <a href="{{ reverse "domain-update" .domain.Id.Value }}">Change</a>
+  </li>
+  <li{{ if .mailboxtab }} class="active" aria-current="page"{{ end }}>
+    <a href="{{ reverse "mailbox-list" .domain.Id.Value }}">Mailboxes</a>
+  </li>
+  <li{{ if .aliastab }} class="active" aria-current="page"{{ end }}>
+    <a href="{{ reverse "alias-list" .domain.Id.Value }}">Aliases</a>
+  </li>
+  <li{{ if .deletetab }} class="active" aria-current="page"{{ end }}>
+    <a href="{{ reverse "domain-delete" .domain.Id.Value }}">Delete</a>
+  </li>{{ else }}
+  <li><a>Overview</a></li>
+  <li><a>Change</a></li>
+  <li><a>Mailboxes</a></li>
+  <li><a>Aliases</a></li>
+  <li><a>Delete</a></li>{{ end }}
+  <li class="signout">
+    <a href="{{ reverse "sign-out" }}">Sign out</a>
+  </li>
+</ul>
+{{ end }}

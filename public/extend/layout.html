@@ -6,52 +6,24 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <meta name="keywords" content="golang webapp mailadmin">
     <meta name="description" content="mailadmin web application">
-    <title>MailAdmin: {{ .Title }}</title>
-    <link rel="stylesheet" href="{{ static "bootstrap.min.css" }}">
-    <link rel="stylesheet" href="{{ static "mailadmin.css" }}">
-    <script src="{{ static "bootstrap.bundle.min.js" }}"></script>
-    <script src="{{ static "feather.min.js" }}"></script>
+    <title>MailAdmin</title>
+    <link rel="stylesheet" href="{{ static "styles.css" }}" />
   </head>
   <body>
-    <nav class="navbar navbar-expand-sm sticky-top flex-md-nowrap p-0 shadow-sm navbar-dark bg-dark">
-      <div class="container-fluid">
-	<a class="navbar-brand col-10 col-sm-2" href="{{ reverse "domain-list" }}">MailAdmin</a>
-	<button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-	  <span class="navbar-toggler-icon"></span>
-	</button>
-	<div class="collapse navbar-collapse" id="navbarSupportedContent">
-	  <div class="navbar-nav me-auto">
-	    <div class="navbar-title">{{ .domain.Name }}</div>
-	  </div>
-	  <div class="navbar-nav navbar-item">
-	    <a class="nav-link text-nowrap" href="{{ reverse "sign-out" }}">
-	      <span data-feather="log-out"></span> Sign out
-	    </a>
-	  </div>
-	</div>
-      </div>
-    </nav>
-    <div class="container-fluid">
-      <div class="row">
-	<div class="col-12 col-lg-2 bg-light sidebar pt-2 sidebar-sticky">
-	  {{ template "sidebar" . }}
-	</div>
-	<div class="col-12 col-lg-10 ms-md-auto pt-2">
-	  {{ if .flashes }}
-	  {{ range $_, $flash := .flashes }}
-	  <div class="alert alert-success alert-dismissible" role="alert">
-	    {{ $flash }}
-	    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-	  </div>
-	  {{ end }}
-	  {{ end }}
-	  {{ template "content" . }}
-	</div>
-      </div>
-    </div>
-    <script>
-      feather.replace();
-    </script>
+    <header>
+      <hgroup>
+        <h1>MailAdmin</h1>
+        <h2>Mailboxes manager</h2>
+      </hgroup>
+      <nav>{{ template "sidebar" . }}</nav>
+    </header>
+    <main>{{ if .flashes }}
+      <aside class="flash-messages">
+        <ul>{{ range $_, $flash := .flashes }}
+          <li>{{ $flash }}</li>
+        </ul>{{ end }}
+      </aside>{{ end }}{{ template "content" . }}
+    </main>
   </body>
 </html>
 {{ end }}

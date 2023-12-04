@@ -1,52 +1,35 @@
-{{ define "sidebar" }}{{ end }}
 {{ define "content" }}
-<h5>{{ .Title }}</h5>
-<table class="table table-hover">
-  <caption>
-    No. {{ .DomainCount }} Managed Domains
-    <a class="float-end btn btn-sm btn-outline-primary" href="{{ reverse "domain-create" }}">
-      <span data-feather="plus-square"></span> New Domain
-    </a>
-  </caption>
-  <thead>
-    <tr>
-      <th>Domain</th>
-      <th>Active</th>
-      <th>BackupMX</th>
-      <th>Last Modified</th>
-      <th></th>
-    </tr>
-  </thead>
-  <tbody class="table-group-divider">
-    {{ range $_, $domain := .domains }}
-    <tr{{ if not $domain.Active}} class="text-muted"{{ end }}>
-      <td>
-	<a href="{{ reverse "domain-overview" $domain.Id.Value }}">
-	  {{ $domain.Name }}
-	</a>
-      </td>
-      <td>
-	{{ if $domain.Active }}
-	<span data-feather="check-circle"></span>
-	<span class="visually-hidden">Active</span>
-	{{ end }}
-      </td>
-      <td>
-	{{ if $domain.BackupMX }}
-	<span data-feather="check-circle"></span>
-	<span class="visually-hidden">BackupMX</span>
-	{{ end }}
-      </td>
-      <td>
-	{{ $domain.Modified.Format "2006-01-02 15:04:05 MST" }}
-      </td>
-      <td>
-	<a class="text-danger" href="{{ reverse "domain-delete" $domain.Id.Value }}">
-	  <span data-feather="trash-2"></span>
-	  <span class="visually-hidden">Delete</span>
-      </td>
-    </tr>
-    {{ end }}
-  </tbody>
-</table>
+<section>
+  <h2>Domain list</h2>
+  <table class="domains">
+    <caption>
+      <span>No. {{ .DomainCount }} Managed Domains</span>
+      <a href="{{ reverse "domain-create" }}"><button>New Domain</button></a>
+    </caption>
+    <thead>
+      <tr>
+        <th>Domain</th>
+        <th>Active</th>
+        <th>BackupMX</th>
+        <th>Last Modified</th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody>{{ range $_, $domain := .domains }}
+      <tr{{ if not $domain.Active}} class="secondary"{{ end }}>
+        <td>
+	  <a href="{{ reverse "domain-overview" $domain.Id.Value }}">
+	    {{ $domain.Name }}
+	  </a>
+        </td>
+        <td>{{ if $domain.Active }}Active{{ end }}</td>
+        <td>{{ if $domain.BackupMX }}BackupMX{{ end }}</td>
+        <td>{{ $domain.Modified.Format "2006-01-02 15:04:05 MST" }}</td>
+        <td>
+	  <a href="{{ reverse "domain-delete" $domain.Id.Value }}">Delete</a>
+        </td>
+      </tr>{{ end }}
+    </tbody>
+  </table>
+</section>
 {{ end }}

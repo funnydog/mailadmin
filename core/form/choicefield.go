@@ -20,20 +20,18 @@ type ChoiceField struct {
 }
 
 func (f *ChoiceField) Clean(value string) (interface{}, error) {
-	if value == "" {
-		if f.Required {
-			return nil, ErrRequired
+	if value != "" {
+		for _, c := range f.Choices {
+			if c.Key == value {
+				return c.Key, nil
+			}
 		}
+		return nil, ErrChoiceNotFound(value)
+	} else if f.Required {
+		return nil, ErrRequired
+	} else {
 		return nil, nil
 	}
-
-	for _, c := range f.Choices {
-		if c.Key == value {
-			return c.Key, nil
-		}
-	}
-
-	return nil, ErrChoiceNotFound(value)
 }
 
 func (f *ChoiceField) Update(name string, value interface{}, fv *FieldValue) {

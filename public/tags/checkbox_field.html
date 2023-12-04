@@ -1,9 +1,0 @@
-{{ define "checkboxfield" }}
-<div class="form-check form-switch">
-  <input class="form-check-input"{{ if .Value }} checked{{ end }} id="{{ .Name }}" name="{{ .Name }}" type="checkbox" role="switch"{{ if .Error }} aria-describedby="{{ .Name }}Feedback"{{ end }}{{ if .Required }} required {{end }}>
-  <label class="form-check-label{{ if .Error }} is-invalid{{ else if .Submitted }} is-valid{{ end }}" for="{{ .Name }}">{{ .Label }}</label>
-  {{ if .Error }}
-  <div class="invalid-feedback" id="{{ .Name }}Feedback">{{ .Error }}</div>
-  {{ end }}
-</div>
-{{ end }}

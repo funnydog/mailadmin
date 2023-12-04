@@ -1,45 +1,37 @@
-{{ define "sidebar" }}{{ template "mailbox_sidebar" . }}{{ end }}
 {{ define "content" }}
-<h5>Mailboxes for {{ .domain.Name }}</h5>
-<table class="table table-hover table-condensed">
-  <caption>
-    No. {{ .MailboxCount }} Managed Mailboxes
-    <a class="float-end btn btn-sm btn-outline-primary" href="{{ reverse "mailbox-create" .domain.Id.Value }}">
-      <span data-feather="plus-square"></span> New Mailbox
-    </a>
-  </caption>
-  <thead>
-    <tr>
-      <th>Email</th>
-      <th>Active</th>
-      <th>Last Modified</th>
-      <th></th>
-    </tr>
-  </thead>
-  <tbody>
-    {{ range $_, $mailbox := .mailboxes }}
-    <tr{{ if not $mailbox.Active }} class="text-muted"{{ end }}>
-      <td>
-	<a href="{{ reverse "mailbox-update" $mailbox.Domain.Value $mailbox.Id.Value }}">
-	  {{ $mailbox.Email }}
-	</a>
-      </td>
-      <td>
-	{{ if $mailbox.Active }}
-	<span data-feather="check-circle"></span>
-	<span class="visually-hidden">Active</span>
-	{{ end }}
-      </td>
-      <td>
-	{{ $mailbox.Modified.Format "2006-01-02 15:04:05 MST" }}
-      </td>
-      <td>
-	<a class="text-danger" href="{{ reverse "mailbox-delete" $mailbox.Domain.Value $mailbox.Id.Value }}">
-	  <span data-feather="trash-2"></span>
-	  <span class="visually-hidden">Delete</span>
-      </td>
-    </tr>
-    {{ end }}
-  </tbody>
-</table>
+<section>
+  <h2>Mailboxes for {{ .domain.Name }}</h2>
+  <table class="mailboxes">
+    <caption>
+      <span>No. {{ .MailboxCount }} Managed Mailboxes</span>
+      <a href="{{ reverse "mailbox-create" .domain.Id.Value }}">
+        <button>New Mailbox</button>
+      </a>
+    </caption>
+    <thead>
+      <tr>
+        <th>Email</th>
+        <th>Active</th>
+        <th>Last Modified</th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody>{{ range $_, $mailbox := .mailboxes }}
+      <tr{{ if not $mailbox.Active }} class="secondary"{{ end }}>
+        <td>
+	  <a href="{{ reverse "mailbox-update" $mailbox.Domain.Value $mailbox.Id.Value }}">
+	    {{ $mailbox.Email }}
+	  </a>
+        </td>
+        <td>{{ if $mailbox.Active }}Active{{ end }}</td>
+        <td>{{ $mailbox.Modified.Format "2006-01-02 15:04:05 MST" }}</td>
+        <td>
+	  <a href="{{ reverse "mailbox-delete" $mailbox.Domain.Value $mailbox.Id.Value }}">
+	    Delete
+          </a>
+        </td>
+      </tr>{{ end }}
+    </tbody>
+  </table>
+</section>
 {{ end }}

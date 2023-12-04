@@ -1,7 +1,7 @@
 {
     "username": "admin",
     "password": "$2a$10$1VlSmHCVIMH.Yfupbd1Itei0QJPZ3EkOqqBMny04O1upP3cDHzBx6",
-    "serverhost": "127.0.0.1",
+    "serverhost": "0.0.0.0",
     "serverport": "8080",
     "servercert": "",
     "serverkey": "",
@@ -12,11 +12,9 @@
     "dbhost": "",
     "dbport": "",
     "dbsslmode": "",
-    "baseprefix": "/mailadmin",
-    "staticprefix": "/mailadmin/static",
+    "baseprefix": "",
+    "staticprefix": "/static",
     "cookiekey": "something-very-secret",
     "debug": true,
-    "allowed_urls": [
-        "/mailadmin/static/bootstrap.min.css"
-    ]
+    "allowed_urls": []
 }

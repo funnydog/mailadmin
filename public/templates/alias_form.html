@@ -1,22 +1,32 @@
-{{ define "sidebar" }}{{ template "alias_sidebar" . }}{{ end }}
 {{ define "content" }}
-<div class="row">
-  <div class="col-sm">
-    <h5>{{ .Title }}</h5>
-  </div>
-</div>
-<form class="row" action="" method="post">
-  {{ .csrfField }}
-  <div class="col mb-3">
-    {{ template "emailfield" .form.Values.destination }}
-  </div>
-  <div class="mb-3">
-    {{ template "emailfield" .form.Values.redirect_to }}
-  </div>
-  <div class="mb-3">
-    <label class="form-label">Alias options</label>
-    {{ template "checkboxfield" .form.Values.active }}
-  </div>
-  {{ template "form_buttons" . }}
-</form>
+<section>
+  <h2>{{ .Title }}</h2>
+  <form action="" method="post">
+    {{ .csrfField }}
+    <ul>
+      <li>
+        <label for="dest">Destination</label>
+        <input type="email" name="destination" id="dest" value="{{ .form.Values.destination.Value }}" required />
+        <span></span>
+      </li>
+      <li>
+        <label for="redir">Redirect to</label>
+        <input type="email" name="redirect_to" id="redir" value="{{ .form.Values.redirect_to.Value }}" required />
+        <span></span>
+      </li>
+      <li>
+        <fieldset>
+          <legend>Options</legend>
+          <div>
+            <input type="checkbox" name="active" id="active" {{ if .form.Values.active.Value }}checked{{ end }} />
+            <label for="active">Active</label>
+          </div>
+        </fieldset>
+      </li>
+      <li>
+        <button type="submit">Confirm</button>
+      </li>
+    </ul>
+  </form>
+</section>
 {{ end }}

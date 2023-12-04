@@ -1,48 +1,39 @@
-{{ define "sidebar" }}{{ template "alias_sidebar" . }}{{ end }}
 {{ define "content" }}
-<h5>Aliases for {{ .domain.Name }}</h5>
-<table class="table table-hover table-condensed">
-  <caption>
-    No. {{ .AliasCount }} Managed Aliases
-    <a class="float-end btn btn-sm btn-outline-primary" href="{{ reverse "alias-create" .domain.Id.Value }}">
-      <span data-feather="plus-square"></span> New Alias
-    </a>
-  </caption>
-  <thead>
-    <tr>
-      <th>Destination</th>
-      <th>Redirect to</th>
-      <th>Active</th>
-      <th>Last Modified</th>
-      <th></th>
-    </tr>
-  </thead>
-  <tbody>
-    {{ range $_, $alias := .aliases }}
-    <tr{{ if not $alias.Active }} class="text-muted"{{ end }}>
-      <td>
-	<a href="{{ reverse "alias-update" $alias.Domain.Value $alias.Id.Value }}">
-	  {{ $alias.Destination }}
-	</a>
-      </td>
-      <td>
-	{{ $alias.RedirectTo }}
-      </td>
-      <td>
-	{{ if $alias.Active }}
-	<span data-feather="check-circle"></span>
-	<span class="visually-hidden">Active</span>
-	{{ end }}
-      </td>
-      <td>
-	{{ $alias.Modified.Format "2006-01-02 15:04:05 MST" }}
-      </td>
-      <td>
-	<a class="text-danger" href="{{ reverse "alias-delete" $alias.Domain.Value $alias.Id.Value }}">
-	  <span data-feather="trash-2"></span>
-	  <span class="visually-hidden">Delete</span>
-      </td>
-      {{ end }}
-  </tbody>
-</table>
+<section>
+  <h2>Aliases for {{ .domain.Name }}</h2>
+  <table class="aliases">
+    <caption>
+      <span>No. {{ .AliasCount }} Managed Aliases</span>
+      <a href="{{ reverse "alias-create" .domain.Id.Value }}">
+        <button>New Alias</button>
+      </a>
+    </caption>
+    <thead>
+      <tr>
+        <th>Destination</th>
+        <th>Redirect to</th>
+        <th>Active</th>
+        <th>Last Modified</th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody>{{ range $_, $alias := .aliases }}
+      <tr{{ if not $alias.Active }} class="secondary"{{ end }}>
+        <td>
+	  <a href="{{ reverse "alias-update" $alias.Domain.Value $alias.Id.Value }}">
+	    {{ $alias.Destination }}
+	  </a>
+        </td>
+        <td>{{ $alias.RedirectTo }}</td>
+        <td>{{ if $alias.Active }}Active{{ end }}</td>
+        <td>{{ $alias.Modified.Format "2006-01-02 15:04:05 MST" }}</td>
+        <td>
+	  <a href="{{ reverse "alias-delete" $alias.Domain.Value $alias.Id.Value }}">
+	    Delete
+          </a>
+        </td>
+      </tr>{{ end }}
+    </tbody>
+  </table>
+</section>
 {{ end }}

@@ -1,0 +1,29 @@
+{{ define "domain" }}
+<table class="overview">
+  <tbody>
+    <tr>
+      <th scope="row">Domain</th>
+      <td>{{ .Name }}</td>
+    </tr>
+    <tr>
+      <th scope="row">Description</th>
+      <td>{{ .Description }}</td>
+    </tr>
+    <tr>
+      <th scope="row">Active</th>
+      <td>{{ if .Active }}Yes{{ else }}No{{ end }}</td>
+    </tr>
+    <tr>
+      <th scope="row">Backup MX</th>
+      <td>{{ if .BackupMX }}Yes{{ else }}No{{ end }}</td>
+    </tr>
+    <tr>
+      <th scope="row">Created on</th>
+      <td>{{ .Created.Format "2006-01-02 15:04 MST" }}</td>
+    </tr>
+    <tr>
+      <th scope="row">Modified on</th>
+      <td>{{ .Modified.Format "2006-01-02 15:04 MST" }}</td>
+    </tr>
+  </tbody>
+</table>{{ end }}

@@ -263,8 +263,8 @@ func domainList(w http.ResponseWriter, r *http.Request, ctx *core.Context) {
 	}
 
 	ctx.ExtendAndRender(w, "layout", "domain_list.html", &map[string]interface{}{
-		"Title":       "Managed Domains",
 		"DomainCount": len(domains),
+		"domaintab":   true,
 		"domains":     domains,
 		"flashes":     getFlashes(w, r, ctx.Store),
 	})
@@ -284,10 +284,9 @@ func domainOverview(w http.ResponseWriter, r *http.Request, ctx *core.Context) {
 	}
 
 	data := map[string]interface{}{
-		"Title":    "Domain Overview",
-		"overview": true,
-		"domain":   domain,
-		"flashes":  getFlashes(w, r, ctx.Store),
+		"overviewtab": true,
+		"domain":      domain,
+		"flashes":     getFlashes(w, r, ctx.Store),
 	}
 
 	ctx.ExtendAndRender(w, "layout", "domain_overview.html", &data)
@@ -305,29 +304,28 @@ func domainForm() form.Form {
 func domainSave(w http.ResponseWriter, r *http.Request, ctx *core.Context) {
 	parameters := ctx.URLManager.GetParams(r)
 
-	var title string
+	form := domainForm()
+	data := map[string]interface{}{
+		"form":           form,
+		csrf.TemplateTag: csrf.TemplateField(r),
+	}
+
 	domain := types.Domain{}
 	pk, pkerr := strconv.ParseInt(parameters.ByName("pk"), 10, 64)
 	if pkerr != nil {
 		domain.Active = true
-		title = "Create New Domain"
+		data["Title"] = "Create A New Domain"
+		data["domaintab"] = true
 	} else {
 		var err error
 		domain, err = types.GetDomainById(ctx.Database, pk)
 		if err != nil {
 			panic(err)
 		}
-		title = "Change The Domain"
+		data["Title"] = "Change The Domain"
+		data["updatetab"] = true
 	}
-
-	form := domainForm()
-	data := map[string]interface{}{
-		"Title":          title,
-		"update":         true,
-		"form":           form,
-		"domain":         domain,
-		csrf.TemplateTag: csrf.TemplateField(r),
-	}
+	data["domain"] = domain
 
 	if r.Method == "GET" {
 		form.SetString("name", domain.Name)
@@ -380,7 +378,7 @@ func domainDelete(w http.ResponseWriter, r *http.Request, ctx *core.Context) {
 	if r.Method == "GET" {
 		data := map[string]interface{}{
 			"Title":          "Delete the Domain",
-			"delete":         true,
+			"deletetab":      true,
 			"domain":         domain,
 			csrf.TemplateTag: csrf.TemplateField(r),
 		}
@@ -417,16 +415,17 @@ func mailboxList(w http.ResponseWriter, r *http.Request, ctx *core.Context) {
 	ctx.ExtendAndRender(w, "layout", "mailbox_list.html", &map[string]interface{}{
 		"Title":        "Managed Mailboxes",
 		"MailboxCount": len(mailboxes),
+		"mailboxtab":   true,
 		"mailboxes":    mailboxes,
 		"domain":       domain,
 		"flashes":      getFlashes(w, r, ctx.Store),
 	})
 }
 
-func createMailboxForm() form.Form {
+func createMailboxForm(pwdRequired bool) form.Form {
 	myForm := form.Create()
 	myForm.Add("email", &form.EmailField{Label: "E-Mail", Required: true})
-	myForm.Add("password", &form.TextField{Label: "Password", Required: false})
+	myForm.Add("password", &form.TextField{Label: "Password", Required: pwdRequired})
 	myForm.Add("active", &form.CheckboxField{Label: "Active"})
 	return myForm
 }
@@ -459,9 +458,10 @@ func mailboxSave(w http.ResponseWriter, r *http.Request, ctx *core.Context) {
 		title = "Change The Mailbox"
 	}
 
-	form := createMailboxForm()
+	form := createMailboxForm(pkerr != nil)
 	data := map[string]interface{}{
 		"form":           form,
+		"mailboxtab":     true,
 		"domain":         domain,
 		"Title":          title,
 		csrf.TemplateTag: csrf.TemplateField(r),
@@ -545,6 +545,7 @@ func mailboxDelete(w http.ResponseWriter, r *http.Request, ctx *core.Context) {
 
 		data := map[string]interface{}{
 			"Title":          "Delete the Mailbox",
+			"mailboxtab":     true,
 			"domain":         domain,
 			"mailbox":        mailbox,
 			csrf.TemplateTag: csrf.TemplateField(r),
@@ -582,6 +583,7 @@ func aliasList(w http.ResponseWriter, r *http.Request, ctx *core.Context) {
 	ctx.ExtendAndRender(w, "layout", "alias_list.html", &map[string]interface{}{
 		"Title":      "Managed Aliases",
 		"AliasCount": len(aliases),
+		"aliastab":   true,
 		"aliases":    aliases,
 		"domain":     domain,
 		"flashes":    getFlashes(w, r, ctx.Store),
@@ -627,6 +629,7 @@ func aliasSave(w http.ResponseWriter, r *http.Request, ctx *core.Context) {
 	form := createAliasForm()
 	data := map[string]interface{}{
 		"form":           form,
+		"aliastab":       true,
 		"domain":         domain,
 		"Title":          title,
 		csrf.TemplateTag: csrf.TemplateField(r),
@@ -698,6 +701,7 @@ func aliasDelete(w http.ResponseWriter, r *http.Request, ctx *core.Context) {
 
 		data := map[string]interface{}{
 			"Title":          "Delete the Alias",
+			"aliastab":       true,
 			"domain":         domain,
 			"alias":          alias,
 			csrf.TemplateTag: csrf.TemplateField(r),

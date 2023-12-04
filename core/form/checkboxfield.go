@@ -8,13 +8,11 @@ type CheckboxField struct {
 func (f *CheckboxField) Clean(value string) (interface{}, error) {
 	if value != "" {
 		return true, nil
-	}
-
-	if f.Required {
+	} else if f.Required {
 		return nil, ErrRequired
+	} else {
+		return false, nil
 	}
-
-	return false, nil
 }
 
 func (f *CheckboxField) Update(name string, value interface{}, fv *FieldValue) {

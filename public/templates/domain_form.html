@@ -1,23 +1,35 @@
-{{ define "sidebar" }}{{ template "domain_sidebar" . }}{{ end }}
 {{ define "content" }}
-<div class="row">
-  <div class="col-sm">
-    <h5>{{ .Title }}</h5>
-  </div>
-</div>
-<form action="" method="post" class="form">
-  {{ .csrfField }}
-  <div class="mb-3">
-    {{ template "textfield" .form.Values.name }}
-  </div>
-  <div class="mb-3">
-    {{ template "textfield" .form.Values.description }}
-  </div>
-  <div class="mb-3">
-    <label class="form-label">Domain options</label>
-    {{ template "checkboxfield" .form.Values.backupmx }}
-    {{ template "checkboxfield" .form.Values.active }}
-  </div>
-  {{ template "form_buttons" . }}
-</form>
+<section>
+  <h2>{{ .Title }}</h2>
+  <form action="" method="post">
+    {{ .csrfField }}
+    <ul>
+      <li>
+        <label for="name">Domain name</label>
+        <input type="text" name="name" id="name" value="{{ .form.Values.name.Value }}" required />
+        <span></span>
+      </li>
+      <li>
+        <label for="description">Domain description</label>
+        <textarea name="description" id="description">{{ .form.Values.description.Value }}</textarea>
+      </li>
+      <li>
+        <fieldset>
+          <legend>Options</legend>
+          <div>
+            <input type="checkbox" name="active" id="active" {{ if .form.Values.active.Value }}checked{{ end }}/>
+            <label for="active">Active</label>
+          </div>
+          <div>
+            <input type="checkbox" name="backupmx" id="backupmx" {{ if .form.Values.backupmx.Value}}checked{{end}}/>
+            <label for="backupmx">BackupMX</label>
+          </div>
+        </fieldset>
+      </li>
+      <li>
+        <button type="submit">Confirm</button>
+      </li>
+    </ul>
+  </form>
+</section>
 {{ end }}

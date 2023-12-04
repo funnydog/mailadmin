@@ -1,50 +1,22 @@
-{{ define "sidebar" }}{{ template "domain_sidebar" . }}{{ end }}
 {{ define "content" }}
-<h5>Overview</h5>
-<table class="table">
-  <tbody>
-    <tr>
-      <th scope="row">Domain</th>
-      <td>{{ .domain.Name }}</td>
-    </tr>
-    <tr>
-      <th scope="row">Active</th>
-      <td>{{ if .domain.Active }}Yes{{ else }}No{{ end }}</td>
-    </tr>
-    <tr>
-      <th scope="row">Backup MX</th>
-      <td>{{ if .domain.BackupMX }}Yes{{ else }}No{{ end }}</td>
-    </tr>
-    <tr>
-      <th scope="row">Created on</th>
-      <td>{{ .domain.Created.Format "2006-01-02 15:04 MST" }}</td>
-    </tr>
-    <tr>
-      <th scope="row">Modified on</th>
-      <td>{{ .domain.Modified.Format "2006-01-02 15:04 MST" }}</td>
-    </tr>
-  </tbody>
-</table>
-<ul class="list-inline">
-  <li class="list-inline-item">
-    <a class="card-link" href="{{ reverse "domain-update" .domain.Id.Value }}">
-      <span data-feather="edit-2"></span> Change
-    </a>
-  </li>
-  <li class="list-inline-item">
-    <a class="card-link" href="{{ reverse "mailbox-list" .domain.Id.Value }}">
-      <span data-feather="inbox"></span> Mailboxes
-    </a>
-  </li>
-  <li class="list-inline-item">
-    <a class="card-link" href="{{ reverse "alias-list" .domain.Id.Value }}">
-      <span data-feather="mail"></span> Aliases
-    </a>
-  </li>
-  <li class="list-inline-item">
-    <a class="card-link text-danger" href="{{ reverse "domain-delete" .domain.Id.Value }}">
-      <span data-feather="trash"></span> Delete
-    </a>
-  </li>
-</ul>
+<section>
+  <h2>Overview of {{ .domain.Name }}</h2>
+  {{ template "domain" .domain }}
+  <nav>
+    <ul>
+      <li>
+        <a href="{{ reverse "domain-update" .domain.Id.Value }}">Change</a>
+      </li>
+      <li>
+        <a href="{{ reverse "mailbox-list" .domain.Id.Value }}">Mailboxes</a>
+      </li>
+      <li>
+        <a href="{{ reverse "alias-list" .domain.Id.Value }}">Aliases</a>
+      </li>
+      <li>
+        <a href="{{ reverse "domain-delete" .domain.Id.Value }}">Delete</a>
+      </li>
+    </ul>
+  </nav>
+</section>
 {{ end }}

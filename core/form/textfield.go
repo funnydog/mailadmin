@@ -15,15 +15,17 @@ type TextField struct {
 }
 
 func (f *TextField) Clean(value string) (interface{}, error) {
-	if f.Required && value == "" {
+	if value != "" {
+		if 0 < f.MaxLength && f.MaxLength < len(value) {
+			return nil, ErrLengthExceeded(f.MaxLength)
+		}
+		return value, nil
+	} else if f.Required {
 		return nil, ErrRequired
+	} else {
+		return value, nil
 	}
 
-	if 0 < f.MaxLength && f.MaxLength < len(value) {
-		return nil, ErrLengthExceeded(f.MaxLength)
-	}
-
-	return value, nil
 }
 
 func (f *TextField) Update(name string, value interface{}, fv *FieldValue) {

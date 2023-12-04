@@ -11,14 +11,13 @@ type IntegerField struct {
 }
 
 func (f *IntegerField) Clean(value string) (interface{}, error) {
-	if value == "" {
-		if f.Required {
-			return nil, ErrRequired
-		}
-
+	if value != "" {
+		return strconv.ParseInt(value, 10, 64)
+	} else if f.Required {
+		return nil, ErrRequired
+	} else {
 		return nil, nil
 	}
-	return strconv.ParseInt(value, 10, 64)
 }
 
 func (f *IntegerField) Update(name string, value interface{}, fv *FieldValue) {

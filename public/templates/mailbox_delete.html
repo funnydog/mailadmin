@@ -1,26 +1,32 @@
-{{ define "sidebar" }}{{ template "mailbox_sidebar" . }}{{ end }}
 {{ define "content" }}
-<h5>Delete The Mailbox</h5>
-<table class="table">
-  <tbody>
-    <tr>
-      <th scope="row">Address</th>
-      <td>{{ .mailbox.Email }}</td>
-    </tr>
-    <tr>
-      <th scope="row">Active</th>
-      <td>{{ if .mailbox.Active }}Yes{{ else }}No{{ end }}</td>
-    </tr>
-    <tr>
-      <th scope="row">Created on</th>
-      <td>{{ .mailbox.Created.Format "2006-01-02 15:04:05 MST" }}</td>
-    </tr>
-    <tr>
-      <th scope="row">Modified on</th>
-      <td>{{ .mailbox.Modified.Format "2006-01-02 15:04:05 MST" }}</td>
-    </tr>
-  </tbody>
-</table>
-<p class="text-danger fw-bold">Are you sure you want to delete this mailbox?</p>
-{{ template "delete_form" . }}
+<section>
+  <h2>Delete The Mailbox</h2>
+  <table class="overview">
+    <tbody>
+      <tr>
+        <th scope="row">Address</th>
+        <td>{{ .mailbox.Email }}</td>
+      </tr>
+      <tr>
+        <th scope="row">Active</th>
+        <td>{{ if .mailbox.Active }}Yes{{ else }}No{{ end }}</td>
+      </tr>
+      <tr>
+        <th scope="row">Created on</th>
+        <td>{{ .mailbox.Created.Format "2006-01-02 15:04:05 MST" }}</td>
+      </tr>
+      <tr>
+        <th scope="row">Modified on</th>
+        <td>{{ .mailbox.Modified.Format "2006-01-02 15:04:05 MST" }}</td>
+      </tr>
+    </tbody>
+  </table>
+  <p>Are you sure you want to delete this mailbox?</p>
+  <form action="" method="post">
+    {{ .csrfField }}
+    <div>
+      <button type="submit">Yes, do it now</button>
+    </div>
+  </form>
+</section>
 {{ end }}
