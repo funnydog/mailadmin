@@ -38,6 +38,24 @@ mail server.
    project with ```go build mailadmin.go``` and run the resulting
    binary.
 
+## Build a static executable
+
+The command ```go build``` will build a single executable dynamically
+linked with the various libraries (included the libc).
+
+That executable is not portable to all the Linux distributions because
+of a mismatch of the libc version.
+
+You can statically link the executable but not against the GNU libc
+(glibc). You can use the musl libc instead.
+
+Provided that the musl libc is installed the following command will
+build a complete statically linked executable:
+
+```
+$ CGO_CFLAGS="-D_LARGEFILE64_SOURCE" CC=musl-gcc go build --ldflags '-linkmode external -extldflags "-static"'
+```
+
 ## Disclaimer
 
 May contain unintended bugs.
